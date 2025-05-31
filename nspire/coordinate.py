@@ -22,11 +22,29 @@ from utils import *
 screen_size = ti_draw.get_screen_dim()
 
 #  Enumerations
-ECEF    = 0
-GEO_DD  = 1
-GEO_DM  = 2
-GEO_DMS = 3
-UTM     = 4
+TYPE_ECEF    = 0
+TYPE_GEO_DD  = 1
+TYPE_GEO_DM  = 2
+TYPE_GEO_DMS = 3
+TYPE_UTM     = 4
+
+#------------------------------------#
+#-      Convert Type to String      -#
+#------------------------------------#
+def type_to_string( tp ):
+    if tp == TYPE_ECEF:
+        return 'Earth-Centered, Earth-Fixed'
+    if tp == TYPE_GEO_DD:
+        return 'Geographic, Decimal-Degrees'
+    if tp == TYPE_GEO_DM:
+        return 'Geographic, Degree-Minutes'
+    if tp == TYPE_GEO_DMS:
+        return 'Geographic, Degree-Minute-Seconds'
+    if tp == TYPE_UTM:
+        return 'Universal Transverse Mercator'
+    
+    raise Exception('Unsupported')
+
 
 class Base:
     '''
@@ -97,6 +115,70 @@ class UTM(Base):
         self.m_northing   = northing
         self.m_elev_m     = elev_m
 
+
+#---------------------------------#
+#-       Geographic Input        -#
+#---------------------------------#
+
+#---------------------------------#
+#-           UTM Input           -#
+#---------------------------------#
+
+#---------------------------------#
+#-           ECEF Input          -#
+#---------------------------------#
+
+#--------------------------------------------#
+#-          Coordinate Input Menu           -#
+#--------------------------------------------#
+def coord_input_menu( coord_types ):
+
+    #  Iterate over input and output
+    redraw_all = True
+    while True:
+
+        #  Draw the header
+        if redraw_all:
+            ti_draw.clear()
+        
+        fill_rect( 5, 5, screen_size[0]-10, 35, Color.DODGER_BLUE )
+        draw_text( '    Coordinate Conversions   Time:  ' + format_time(localtime()) , 5, 30 )
+
+
+        #------------------------------------#
+        #-          Input Coordinate        -#
+        #------------------------------------#
+        fill_rect( 5, 30, screen_size[0]-10, 20, Color.LIGHT_BLUE )
+        draw_text( '       ' + type_to_string( coord_types[1] ), 5, 48 )
+        draw_rect( 5, 50, screen_size[0]-10, 64, line_color = Color.LIGHT_GRAY )
+
+
+        #------------------------------------#
+        #-          Output Coordinate       -#
+        #------------------------------------#
+        fill_rect( 5, 115, screen_size[0]-10, 20, Color.LIGHT_BLUE )
+        draw_text( '       ' + type_to_string( coord_types[0] ), 5, 131 )
+        draw_rect( 5, 135, screen_size[0]-10, 64, line_color = Color.LIGHT_GRAY )
+        
+        #  Run the "interrupt" loop until something interest
+        okay_to_run = True
+        while okay_to_run:
+
+            #  Fetch keys received
+            keys = get_keys()
+            if len(keys) > 0:
+                for k in keys:
+
+                    #  Exit Menu
+                    if k == 'esc':
+                        return None
+
+                    else:
+                        print('Key Pressed: ', k)
+            else:
+                sleep(0.1)
+
+
 #--------------------------------------------#
 #-        Menu for Geographic Coordinate    -#
 #--------------------------------------------#
@@ -134,14 +216,13 @@ def geographic_menu():
                     return None
                 
                 elif k == '1' or k == 'd':
-                    return GEO_DD
+                    return TYPE_GEO_DD
                 elif k == '2' or k == 'm':
-                    return GEO_DM
+                    return TYPE_GEO_DM
                 elif k == '3' or k == 's':
-                    return GEO_DMS
+                    return TYPE_GEO_DMS
                 else:
                     pass
-        
         else:
             sleep(0.1)
 
@@ -211,12 +292,14 @@ def coord_converter():
                         break
 
                     elif k == 'u':
-                        coord_types.append( 'utm' )
+                        coord_types.append( TYPE_UTM )
+                        redraw_all = True
                         okay_to_run = False
                         break
 
                     elif k == 'e':
-                        coord_types.append( 'ecef' )
+                        coord_types.append( TYPE_ECEF )
+                        redraw_all = True
                         okay_to_run = False
                         break
 
@@ -225,3 +308,7 @@ def coord_converter():
             else:
                 sleep(0.1)
 
+    #  Perform Conversion
+    print( 'Performing Conversions ', coord_types )
+
+    coord_input_menu( coord_types )
