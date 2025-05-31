@@ -28,6 +28,11 @@ TYPE_GEO_DM  = 2
 TYPE_GEO_DMS = 3
 TYPE_UTM     = 4
 
+INPUT_WOUNDS = { TYPE_ECEF:    3,
+                 TYPE_GEO_DD:  3,
+                 TYPE_GEO_DM:  6,
+                 TYPE_GEO_DMS: 8 }
+
 #------------------------------------#
 #-      Convert Type to String      -#
 #------------------------------------#
@@ -54,84 +59,103 @@ class Base:
     def __init__(self):
         pass
 
+class ECEF(Base):
+
+    def __init__( self ):
+        self.x = ''
+        self.y = ''
+        self.z = ''
+
 
 class Geo(Base):
     '''
     Geographic Coordinate System
     '''
   
-    def __init__( self,
-                  lat_deg = 0,
-                  lon_deg = 0,
-                  elev_m  = 0 ):
-        self.m_lat_deg = lat_deg
-        self.m_lon_deg = lon_deg
-        self.m_elev_m  = elev_m
+    def __init__( self ):
+        self.lat_deg = ''
+        self.lon_deg = ''
+        self.elev_m  = ''
 
         super().__init__(self)
-
-    @staticmethod
-    def from_dms( lat_deg, lat_min, lat_sec,
-                  lon_deg, lon_min, lon_sec,
-                  elev_m = 0 ):
-        
-        lat = lat_deg + lat_min / 60.0 + lat_sec / 3600.0
-        lon = lon_deg + lon_min / 60.0 + lon_sec / 3600.0
-        return Geo( lat_deg = lat,
-                    lon_deg = lon,
-                    elev_m  = elev_m )
-    
-    @staticmethod
-    def from_dm( lat_deg, lat_min,
-                 lon_deg, lon_min,
-                 elev_m = 0 ):
-
-        lat = lat_deg + lat_min / 60.0
-        lon = lon_deg + lon_min / 60.0
-
-        return Geo( lat_deg = lat,
-                    lon_deg = lon,
-                    elev_m  = elev_m )
-
-    @staticmethod
-    def from_dd( lat_deg, lon_deg, elev_m = 0 ):
-
-        return Geo( lat_deg = lat,
-                    lon_deg = lon,
-                    elev_m  = elev_m )
 
 
 class UTM(Base):
 
-    def __init__( self, 
-                  grid_zone = None,
-                  hemisphere = 'n',
-                  easting = 0,
-                  northing = 0,
-                  elev_m  = 0 ):
-        self.m_grid_zone  = grid_zone
-        self.m_hemisphere = hemisphere
-        self.m_easting    = easting
-        self.m_northing   = northing
-        self.m_elev_m     = elev_m
+    def __init__( self ):
+        self.grid_zone  = ''
+        self.hemisphere = ''
+        self.easting    = ''
+        self.northing   = ''
+        self.elev_m     = ''
 
+class Factory:
+
+    @staticmethod
+    def create( tp ):
+        if tp == TYPE_ECEF:
+            return ECEF()
+        if tp == TYPE_UTM:
+            return UTM()
+        return Geo()
 
 #---------------------------------#
 #-       Geographic Input        -#
 #---------------------------------#
+def geo_dd_input( start_y, coord ):
+
+    #  Latitude Input
+    draw_rect( 15, start_y + 20, 50, 20, Color.GRAY )
+
+    #  Longitude Input
+    draw_rect( 100, start_y + 20, 50, 20, Color.GRAY )
+
+def geo_dm_input( start_y, coord ):
+    pass
+
+def geo_dms_input( start_y, coord ):
+    pass
 
 #---------------------------------#
 #-           UTM Input           -#
 #---------------------------------#
+def utm_input( start_y, coord ):
+    
+    #  Grid-Zone Input
+    fill_rect( 15, start_y + 10, 50, 20, Color.GRAY )
+    draw_text( 'Grid-Zone: ', 15, start_y + 10 )
+
+    draw_rect( 75, start_y + 10, 50, 20, line_color = Color.GRAY )
+    draw_text( coord.grid_zone, 85, start_y + 50 )
 
 #---------------------------------#
 #-           ECEF Input          -#
 #---------------------------------#
+def ecef_input( start_y, coord ):
+    
+    #  X Input
+    fill_rect( 15, start_y + 20, 50, 20, Color.GRAY )
+    draw_text( 'X (m): ', 15, start_y )
+
+    draw_rect( 75, start_y + 20, 50, 20, line_color = Color.GRAY )
+    draw_text( coord.x, 85, start_y + 20 )
+
+
+INPUT_MAP = { TYPE_ECEF:    ecef_input,
+              TYPE_GEO_DD:  geo_dd_input,
+              TYPE_GEO_DM:  geo_dm_input,
+              TYPE_GEO_DMS: geo_dms_input,
+              TYPE_UTM:     utm_input }
 
 #--------------------------------------------#
 #-          Coordinate Input Menu           -#
 #--------------------------------------------#
 def coord_input_menu( coord_types ):
+
+    focus_widget = 0
+
+    input_coord  = Factory.create( coord_types[0] )
+    output_coord = Factory.create( coord_types[1] )
 
     #  Iterate over input and output
     redraw_all = True
@@ -149,17 +173,20 @@ def coord_input_menu( coord_types ):
         #-          Input Coordinate        -#
         #------------------------------------#
         fill_rect( 5, 30, screen_size[0]-10, 20, Color.LIGHT_BLUE )
-        draw_text( '       ' + type_to_string( coord_types[1] ), 5, 48 )
+        draw_text( '       ' + type_to_string( coord_types[0] ), 5, 48 )
         draw_rect( 5, 50, screen_size[0]-10, 64, line_color = Color.LIGHT_GRAY )
 
+        INPUT_MAP[coord_types[0]]( 50, input_coord )
 
         #------------------------------------#
         #-          Output Coordinate       -#
         #------------------------------------#
         fill_rect( 5, 115, screen_size[0]-10, 20, Color.LIGHT_BLUE )
-        draw_text( '       ' + type_to_string( coord_types[0] ), 5, 131 )
+        draw_text( '       ' + type_to_string( coord_types[1] ), 5, 131 )
         draw_rect( 5, 135, screen_size[0]-10, 64, line_color = Color.LIGHT_GRAY )
         
+        INPUT_MAP[coord_types[1]]( 150, output_coord )
+
         #  Run the "interrupt" loop until something interest
         okay_to_run = True
         while okay_to_run:
