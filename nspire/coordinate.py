@@ -104,14 +104,21 @@ def geographic_menu():
     
     #  Draw the header
     ti_draw.clear()
-    fill_rect( 5, 5, screen_size[0]-10, 35, Color.LIGHT_BLUE )
-    draw_text( 'Geographic Coordinate' , 5, 30 )
+    fill_rect( 5, 5, screen_size[0]-10, 35, Color.DODGER_BLUE )
+    draw_text( '    Coordinate Conversions   Time:  ' + format_time(localtime()) , 5, 30 )
 
-    # 
-    draw_text( '1. Decimal Degrees (d)',           5,  60 )
-    draw_text( '2. Degrees, Minutes (m)',          5,  85 )
-    draw_text( '3. Degrees, Minutes, Seconds (s)', 5, 110 )
-    draw_text( 'esc: Exit Application',            5, 135 )
+    # Draw the Content
+    draw_rect( 5, 40, screen_size[0]-10, 25, line_color = Color.BLACK )
+    draw_text( '     1) Decimal Degrees (d)',           5,  60 )
+
+    draw_rect( 5, 65, screen_size[0]-10, 25, line_color = Color.BLACK )
+    draw_text( '     2) Degrees, Minutes (m)',          5,  85 )
+
+    draw_rect( 5, 90, screen_size[0]-10, 25, line_color = Color.BLACK )
+    draw_text( '     3) Degrees, Minutes, Seconds (s)', 5, 110 )
+
+    draw_rect( 5, 115, screen_size[0]-10, 25, line_color = Color.BLACK )
+    draw_text( '  esc) Exit Application',            5, 135 )
 
     #  Run until action received
     action = None
@@ -124,15 +131,14 @@ def geographic_menu():
             for k in keys:
                 
                 if k == 'esc':
-                    action = 'exit'
-                    break
+                    return None
                 
                 elif k == '1' or k == 'd':
-                    return dd_menu()
+                    return GEO_DD
                 elif k == '2' or k == 'm':
-                    return dm_menu()
+                    return GEO_DM
                 elif k == '3' or k == 's':
-                    return dms_menu()
+                    return GEO_DMS
                 else:
                     pass
         
@@ -145,27 +151,40 @@ def geographic_menu():
 def coord_converter():
     
     #  Resulting Coordinates
-    input_coord = None
-    output_type = None
+    coord_types = []
 
-    for x in range(2):
+    #  Iterate over input and output
+    redraw_all = True
+    while len(coord_types) < 2:
 
         #  Draw the header
-        ti_draw.clear()
-        fill_rect( 5, 5, screen_size[0]-10, 35, Color.LIGHT_BLUE )
-        draw_text( 'Coordinate Conversions   Time:  ' + format_time(localtime()) , 5, 30 )
+        if redraw_all:
+            ti_draw.clear()
+        
+        fill_rect( 5, 5, screen_size[0]-10, 35, Color.DODGER_BLUE )
+        draw_text( '    Coordinate Conversions   Time:  ' + format_time(localtime()) , 5, 30 )
 
         #  Draw Menu Options
-        hdr = 'Input'
-        if x == 1:
-            hdr = 'Output'
+        if redraw_all:
+            hdr = 'Input'
+            if len(coord_types) == 1:
+                hdr = 'Output'
         
-        draw_text( hdr + ' Coordinate Type:', 5, 55 )
-        draw_text( '----------------------', 5, 65 )
-        draw_text( '  g) Geographic',                    5,  85 )
-        draw_text( '  e) Earth-Centered, Earth-Fixed',   5, 105 )
-        draw_text( '  u) Universal Transverse Mercator', 5, 125 )
-        draw_text( ' esc.  Exit Application',            5, 145 )
+        if redraw_all:
+            fill_rect( 5, 35, screen_size[0]-10, 25, Color.LIGHT_BLUE )
+            draw_text( '    ' + hdr + ' Coordinate Type:', 5, 55 )
+            
+            draw_rect( 5, 60, screen_size[0]-10, 25, line_color = Color.BLACK )
+            draw_text( '    g)  Geographic',                    5,  80 )
+
+            draw_rect( 5, 85, screen_size[0]-10, 25, line_color = Color.BLACK )
+            draw_text( '    e)  Earth-Centered, Earth-Fixed',   5, 105 )
+
+            draw_rect( 5, 110, screen_size[0]-10, 25, line_color = Color.BLACK )
+            draw_text( '    u)  Universal Transverse Mercator', 5, 130 )
+
+            draw_rect( 5, 135, screen_size[0]-10, 25, line_color = Color.BLACK )
+            draw_text( ' esc)   Exit Application',            5, 155 )
 
         #  Run the "interrupt" loop until something interest
         okay_to_run = True
@@ -176,13 +195,18 @@ def coord_converter():
             if len(keys) > 0:
                 for k in keys:
 
+                    #  Exit Menu
                     if k == 'esc':
-                        okay_to_run = False
-                        action = 'exit'
-                        break
+                        return None
 
+                    #  Geographic Coordinates
                     elif k == 'g':
-                        coord_types.append( 'geo' )
+                        geo_value = geographic_menu()
+                        print( "Returned: ", geo_value )
+                        if geo_value is None:
+                            return
+                        coord_types.append( geo_value )
+                        redraw_all = True
                         okay_to_run = False
                         break
 
@@ -199,12 +223,5 @@ def coord_converter():
                     else:
                         print('Key Pressed: ', k)
             else:
-                sleep(0.2)
-
-        if action == 'exit':
-            return action
-    
-    
-    print('Exiting Coordinate Menu' )
-    return action
+                sleep(0.1)
 

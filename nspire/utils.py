@@ -10,11 +10,13 @@
 
 class Color:
 
-    BLACK      = (   0,   0,   0 )
-    BLUE       = (   0,   0, 255 )
-    LIGHT_BLUE = ( 226, 234, 244 )
-    RED        = ( 255,   0,   0 )
-    WHITE      = ( 255, 255, 255 )
+    BLACK       = (   0,   0,   0 )
+    BLUE        = (   0,   0, 255 )
+    DODGER_BLUE = (  30, 144, 255 )
+    LIGHT_BLUE  = ( 226, 234, 244 )
+    RED         = ( 255,   0,   0 )
+    USAF_BLUE   = (   0,  48, 143 )
+    WHITE       = ( 255, 255, 255 )
 
 def format_time( input, fmt_str = '' ):
     (year, mon, day, hour, min, sec, ns, yday, dst ) = input

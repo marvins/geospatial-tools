@@ -15,4 +15,3 @@ import ti_system
 #  Project Libraries
 from hal import *
 
-
