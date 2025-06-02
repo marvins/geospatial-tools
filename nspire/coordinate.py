@@ -122,23 +122,58 @@ def geo_dms_input( start_y, coord ):
 def utm_input( start_y, coord ):
     
     #  Grid-Zone Input
-    fill_rect( 15, start_y + 10, 50, 20, Color.GRAY )
-    draw_text( 'Grid-Zone: ', 15, start_y + 10 )
+    fill_rect( 10, start_y + 1, 80, 20, Color.GRAY )
+    draw_text( 'Grid-Zone: ', 15, start_y + 18 )
 
-    draw_rect( 75, start_y + 10, 50, 20, line_color = Color.GRAY )
-    draw_text( coord.grid_zone, 85, start_y + 50 )
+    draw_rect( 95, start_y + 1, 150, 20, line_color = Color.GRAY )
+    draw_text( coord.grid_zone, 100, start_y + 18 )
 
+    #  Easting Input
+    fill_rect( 10, start_y + 21, 50, 20, Color.LIGHT_GRAY )
+    draw_text( 'East (m): ', 18, start_y + 38 )
+
+    draw_rect( 75, start_y + 21, 120, 20, line_color = Color.LIGHT_GRAY )
+    draw_text( coord.easting, 85, start_y + 35 )
+
+    #  Northing Input
+    fill_rect( 10, start_y + 41, 50, 20, Color.LIGHT_GRAY )
+    draw_text( 'North (m): ', 18, start_y + 58 )
+
+    draw_rect( 75, start_y + 41, 120, 20, line_color = Color.LIGHT_GRAY )
+    draw_text( coord.northing, 85, start_y + 55 )
+
+    #  Elevation Input
+    fill_rect( 10, start_y + 61, 50, 20, Color.LIGHT_GRAY )
+    draw_text( 'Z (m): ', 18, start_y + 78 )
+
+    draw_rect( 75, start_y + 61, 120, 20, line_color = Color.LIGHT_GRAY )
+    draw_text( coord.elev_m, 85, start_y + 75 )
+    
 #---------------------------------#
 #-           ECEF Input          -#
 #---------------------------------#
 def ecef_input( start_y, coord ):
     
     #  X Input
-    fill_rect( 15, start_y + 20, 50, 20, Color.GRAY )
-    draw_text( 'X (m): ', 15, start_y )
+    fill_rect( 10, start_y + 1, 50, 20, Color.LIGHT_GRAY )
+    draw_text( 'X (m): ', 18, start_y + 18 )
 
-    draw_rect( 75, start_y + 20, 50, 20, line_color = Color.GRAY )
-    draw_text( coord.x, 85, start_y + 20 )
+    draw_rect( 75, start_y + 1, 120, 20, line_color = Color.LIGHT_GRAY )
+    draw_text( coord.x, 85, start_y + 15 )
+
+    #  Y Input
+    fill_rect( 10, start_y + 21, 50, 20, Color.LIGHT_GRAY )
+    draw_text( 'Y (m): ', 18, start_y + 38 )
+
+    draw_rect( 75, start_y + 21, 120, 20, line_color = Color.LIGHT_GRAY )
+    draw_text( coord.y, 85, start_y + 35 )
+
+    #  Z Input
+    fill_rect( 10, start_y + 41, 50, 20, Color.LIGHT_GRAY )
+    draw_text( 'Z (m): ', 18, start_y + 58 )
+
+    draw_rect( 75, start_y + 41, 120, 20, line_color = Color.LIGHT_GRAY )
+    draw_text( coord.z, 85, start_y + 55 )
 
 
 INPUT_MAP = { TYPE_ECEF:    ecef_input,
@@ -185,7 +220,7 @@ def coord_input_menu( coord_types ):
         draw_text( '       ' + type_to_string( coord_types[1] ), 5, 131 )
         draw_rect( 5, 135, screen_size[0]-10, 64, line_color = Color.LIGHT_GRAY )
         
-        INPUT_MAP[coord_types[1]]( 150, output_coord )
+        INPUT_MAP[coord_types[1]]( 138, output_coord )
 
         #  Run the "interrupt" loop until something interest
         okay_to_run = True
