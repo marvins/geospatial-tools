@@ -51,28 +51,30 @@ class Widget:
         
         self.refresh_needed = True
 
-
-class VBoxLayout( Widget ):
+class BaseLayout( Widget ):
 
     def __init__(self, *args, **kwargs ):
         super().__init__(*args, **kwargs )
-
         self.widgets = []
 
     def add_widget( self, widget ):
         self.widgets.append( widget )
 
-    def size(self):
+class HBoxLayout( BaseLayout ):
 
+    def __init__(self, *args, **kwargs ):
+        super().__init__(*args, **kwargs )
+
+    def size(self):
         sz = np.array( [0,0], dtype = int )
         for widget in self.widgets:
-            sz[0] = max( sz[0], widget.size()[0] )
-            sz[1] += widget.size()[1]
+            sz[0] += widget.size()[0]
+            sz[1] = max( sz[1], widget.size()[1] )
         return sz
 
     def draw( self, tl ):
 
-        current_tl = tl
+        current_tl = tl.clone()
 
         #  Iterate over each widget
         for widget in self.widgets:
@@ -81,8 +83,32 @@ class VBoxLayout( Widget ):
             widget.draw( current_tl )
 
             #  Offset
-            current_tl += np.array( [ 0, widget.size()[1] ],
-                                    dtype = int )
+            current_tl[0] += widget.size()[0]
+
+class VBoxLayout( BaseLayout ):
+
+    def __init__(self, *args, **kwargs ):
+        super().__init__(*args, **kwargs )
+
+    def size(self):
+        sz = np.array( [0,0], dtype = int )
+        for widget in self.widgets:
+            sz[0] = max( sz[0], widget.size()[0] )
+            sz[1] += widget.size()[1]
+        return sz
+
+    def draw( self, tl ):
+
+        current_tl = tl.clone()
+
+        #  Iterate over each widget
+        for widget in self.widgets:
+
+            #  Draw the widget
+            widget.draw( current_tl )
+
+            #  Offset
+            current_tl[1] += widget.size()[1]
 
 
 class Label(Widget):
@@ -153,13 +179,17 @@ class Text_Input( Widget ):
             self.label_bg_color = Color.LIGHT_GRAY
         if not hasattr(self, 'orientation'):
             self.orientation = 'lr'
+        if not hasattr(self, 'text_offset' ):
+            self.text_offset = 8
+        if not hasattr(self, 'input_width' ):
+            self.input_width = 100
     
     def label_width(self):
-        return len(self.label_text) * 5 + 10
+        return len(self.label_text) * 6 + 10
     
     def size(self):
 
-        return np.array( [ self.label_width() + 100, 20 ],
+        return np.array( [ self.label_width() + self.input_width, 20 ],
                          dtype = int )
     
     def draw(self,tl):
@@ -173,7 +203,7 @@ class Text_Input( Widget ):
         #  Draw label background
         sz = self.size()
         fill_rect( tl[0], tl[1],
-                   self.label_width() + 10, sz[1],
+                   self.label_width(), sz[1],
                    self.label_bg_color )
 
         #  Draw the text
@@ -185,14 +215,14 @@ class Text_Input( Widget ):
         #-      Draw Input     -#
         #-----------------------#
         #  Draw label background
-        text_width = len(self.input_text) * 5
-        box_width  = 100
-        draw_rect( tl[0] + self.label_width() + 10, tl[1],
-                   box_width,                       sz[1]-2 )
+        start_input_x = tl[0] + self.label_width()
+        draw_rect( start_input_x, 
+                   tl[1],
+                   self.input_width - 1, sz[1]-2 )
 
         #  Draw the text
         draw_text( self.input_text,
-                   tl[0] + self.label_width() + 15,
+                   start_input_x + self.text_offset,
                    tl[1] + sz[1] - 5 )
 
         self.refresh_needed = False
@@ -206,11 +236,18 @@ class Check_Box( Widget ):
             self.checked = False
         if not hasattr(self, 'box_height'):
             self.box_height = 14
+        if not hasattr(self, 'label_bg_color'):
+            self.label_bg_color = Color.LIGHT_GRAY
         if not hasattr(self, 'orientation'):
             self.orientation = 'lr'
 
+    def label_width(self):
+        return len(self.label) * 5 + 10
+    
     def size( self ):
-        return np.array( [20,20], dtype = int )
+        
+        x = self.label_width() + 20
+        return np.array( [x,20], dtype = int )
     
     def draw(self, tl):
 
@@ -234,7 +271,7 @@ class Check_Box( Widget ):
         #----------------------#
         #-      Draw Box      -#
         #----------------------#
-        offset = tl
+        offset = tl.clone()
         if self.orientation == 'lr':
             offset[0] += self.size()[0]
             offset[1]  = max( offset[1], self.box_height )

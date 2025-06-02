@@ -8,7 +8,7 @@
 #*                                                                                    *#
 #**************************** INTELLECTUAL PROPERTY RIGHTS ****************************#
 
-from ui import Check_Box, Header, Label, Page, Text_Input, VBoxLayout
+from ui import Check_Box, HBoxLayout, Header, Label, Page, Text_Input, VBoxLayout
 
 def main():
 
@@ -24,13 +24,18 @@ def main():
     #----------------------------------------------------#
     page.add_widget( Label( title = 'Geographic' ) )
 
-    page.add_widget( Text_Input( label_text  = 'Lat (deg): ',
-                                 input_text  = '0',
-                                 orientation = 'ud' ) )
+    hbox = HBoxLayout()
+
+    # Input Layout
+    inp_vbox = VBoxLayout()
+    inp_vbox.add_widget( Text_Input( label_text  = 'Lat (deg): ',
+                                     input_text  = '0',
+                                     orientation = 'ud' ) )
     
-    page.add_widget( Text_Input( label_text  = 'Lon (deg): ',
-                                 input_text  = '0',
-                                 orientation = 'ud' ) )
+    inp_vbox.add_widget( Text_Input( label_text  = 'Lon (deg): ',
+                                     input_text  = '0',
+                                     orientation = 'ud' ) )
+    hbox.add_widget( inp_vbox )
     
     #  Format Layout
     fmt_vbox = VBoxLayout()
@@ -38,7 +43,9 @@ def main():
     fmt_vbox.add_widget( Check_Box( label = 'Degrees', checked = False ) )
     fmt_vbox.add_widget( Check_Box( label = 'Radians', checked = False ) )
 
-    page.add_widget( fmt_vbox )
+    hbox.add_widget( fmt_vbox )
+
+    page.add_widget( hbox )
 
     #----------------------------------------------------#
     #-              UTM Coordinate Widget               -#

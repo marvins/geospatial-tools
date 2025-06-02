@@ -153,6 +153,10 @@ class array:
         output += ' ]'
         return output
     
+    def clone(self):
+
+        return array( self.data[:], self.dtype )
+    
 def zeros( dims, dtype = float ):
     '''
     Build a matrix with zeros
