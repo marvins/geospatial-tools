@@ -106,6 +106,18 @@ class array:
         return array( sub_vals( self.data, other.data ),
                       dtype = self.dtype )
 
+    def __mul__( self, other ):
+
+        if isinstance( other, float ) or isinstance( other, int ):
+            def mult_vals( value, other ):
+                if isinstance( value, list ):
+                    return [ mult_vals( value[x], other ) for x in range( len( value ) ) ]
+                return value * other
+            return array( mult_vals( self.data, other ),
+                          dtype = self.dtype )
+        raise Exception('Not Implemented Yet')
+    
+
     def get_shape( self ):
 
         def temp_shape( arr ):

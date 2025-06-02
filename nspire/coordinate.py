@@ -125,28 +125,28 @@ def utm_input( start_y, coord ):
     fill_rect( 10, start_y + 1, 80, 20, Color.GRAY )
     draw_text( 'Grid-Zone: ', 15, start_y + 18 )
 
-    draw_rect( 95, start_y + 1, 150, 20, line_color = Color.GRAY )
+    draw_rect( 95, start_y + 1, 100, 20, line_color = Color.GRAY )
     draw_text( coord.grid_zone, 100, start_y + 18 )
 
     #  Easting Input
-    fill_rect( 10, start_y + 21, 50, 20, Color.LIGHT_GRAY )
+    fill_rect( 10, start_y + 21, 75, 20, Color.LIGHT_GRAY )
     draw_text( 'East (m): ', 18, start_y + 38 )
 
-    draw_rect( 75, start_y + 21, 120, 20, line_color = Color.LIGHT_GRAY )
+    draw_rect( 90, start_y + 21, 120, 20, line_color = Color.LIGHT_GRAY )
     draw_text( coord.easting, 85, start_y + 35 )
 
     #  Northing Input
     fill_rect( 10, start_y + 41, 50, 20, Color.LIGHT_GRAY )
     draw_text( 'North (m): ', 18, start_y + 58 )
 
-    draw_rect( 75, start_y + 41, 120, 20, line_color = Color.LIGHT_GRAY )
+    draw_rect( 90, start_y + 41, 120, 20, line_color = Color.LIGHT_GRAY )
     draw_text( coord.northing, 85, start_y + 55 )
 
     #  Elevation Input
     fill_rect( 10, start_y + 61, 50, 20, Color.LIGHT_GRAY )
     draw_text( 'Z (m): ', 18, start_y + 78 )
 
-    draw_rect( 75, start_y + 61, 120, 20, line_color = Color.LIGHT_GRAY )
+    draw_rect( 90, start_y + 61, 120, 20, line_color = Color.LIGHT_GRAY )
     draw_text( coord.elev_m, 85, start_y + 75 )
     
 #---------------------------------#

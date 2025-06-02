@@ -47,6 +47,16 @@ def draw_rect( x, y, w, h, **kwargs ):
 
     ti_draw.draw_rect( x, y, w, h )
 
+def draw_line( x1, y1, x2, y2, **kwargs ):
+    '''
+    Draw a rectangle and place on screen
+    '''
+
+    if 'line_color' in kwargs.keys():
+        color = kwargs['line_color']
+        ti_draw.set_color( color[0], color[1], color[2] )
+
+    ti_draw.draw_line( x1, y1, x2, y2 )
 
 
 def get_keys():
