@@ -10,7 +10,9 @@
 
 from ui import Check_Box, HBoxLayout, Header, Label, Page, Text_Input, VBoxLayout
 
-def main():
+from time import sleep
+
+def build_gui():
 
     #  Create a page
     page = Page()
@@ -40,7 +42,7 @@ def main():
     #  Format Layout
     fmt_vbox = VBoxLayout()
     fmt_vbox.add_widget( Label( title = 'Format' ) )
-    fmt_vbox.add_widget( Check_Box( label = 'Degrees', checked = False ) )
+    fmt_vbox.add_widget( Check_Box( label = 'Degrees', checked = True ) )
     fmt_vbox.add_widget( Check_Box( label = 'Radians', checked = False ) )
 
     hbox.add_widget( fmt_vbox )
@@ -82,6 +84,23 @@ def main():
                                  input_text  = '0',
                                  orientation = 'lr' ) )
 
-    page.draw()
+    return page
+
+def main():
+
+    page = build_gui()
+
+    while True:
+
+        page.draw()
+
+        action = page.check_keyboard()
+
+        if not action is None:
+            if action == 'exit':
+                break
+        else:
+            sleep(0.1)
+        
 
 main()
