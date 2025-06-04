@@ -35,15 +35,18 @@ class Page:
                 self.active = 0
                 self.widgets[self.input_list[-1]].is_active = True
 
-    def draw(self):
+    def draw(self, force_draw = False ):
 
-        latest_tl = self.top_left
+        latest_tl = self.top_left.clone()
+
+        if force_draw:
+            ti_draw.clear()
 
         #  Iterate through each widget
         for widget in self.widgets:
 
             #  Draw the widget
-            widget.draw( latest_tl )
+            widget.draw( latest_tl, force_draw )
             
             # Compute new top-left corner
             latest_tl[1] += widget.size()[1]
@@ -59,7 +62,9 @@ class Page:
             keys = get_keys()
             for k in keys:
                 for widget in self.widgets:
-                    widget.check_keyboard( k )
+                    action = widget.check_keyboard( k )
+                    if not action is None:
+                        return action
                 if k == 'esc':
                     return 'exit'
                 elif k == 'down':
@@ -137,7 +142,7 @@ class HBoxLayout( BaseLayout ):
             sz[1] = max( sz[1], widget.size()[1] )
         return sz
 
-    def draw( self, tl ):
+    def draw( self, tl, force_draw = False ):
 
         current_tl = tl.clone()
 
@@ -145,7 +150,7 @@ class HBoxLayout( BaseLayout ):
         for widget in self.widgets:
 
             #  Draw the widget
-            widget.draw( current_tl )
+            widget.draw( current_tl, force_draw )
 
             #  Offset
             current_tl[0] += widget.size()[0]
@@ -162,7 +167,7 @@ class VBoxLayout( BaseLayout ):
             sz[1] += widget.size()[1]
         return sz
 
-    def draw( self, tl ):
+    def draw( self, tl, force_draw = False ):
 
         current_tl = tl.clone()
 
@@ -170,7 +175,7 @@ class VBoxLayout( BaseLayout ):
         for widget in self.widgets:
 
             #  Draw the widget
-            widget.draw( current_tl )
+            widget.draw( current_tl, force_draw )
 
             #  Offset
             current_tl[1] += widget.size()[1]
@@ -187,9 +192,9 @@ class Label(Widget):
     def size(self):
         return np.array( [300, 20], dtype = float )
 
-    def draw(self, tl):
+    def draw(self, tl, force_draw = False ):
 
-        if not self.refresh_needed:
+        if force_draw == False and self.refresh_needed == False:
             return
         
         #  Draw background
@@ -217,9 +222,9 @@ class Header(Widget):
     def size(self):
         return np.array( [300, 20], dtype = float )
 
-    def draw(self, tl):
+    def draw( self, tl, force_draw = False ):
 
-        if not self.refresh_needed:
+        if force_draw == False and self.refresh_needed == False:
             return
         
         #  Draw background
@@ -261,9 +266,9 @@ class Text_Input( Widget ):
         return np.array( [ self.label_width() + self.input_width, 20 ],
                          dtype = int )
     
-    def draw(self,tl):
+    def draw( self, tl, force_draw = False ):
 
-        if not self.refresh_needed:
+        if force_draw == False and self.refresh_needed == False:
             return
         
         #-----------------------#
@@ -313,9 +318,9 @@ class Button( Widget ):
     def size( self ):
         return np.array( [300, 30], dtype = float )
     
-    def draw(self, tl):
+    def draw( self, tl, force_draw = False ):
 
-        if not self.refresh_needed:
+        if force_draw == False and self.refresh_needed == False:
             return
         
         #  box needs to be smaller by the padding amount
@@ -376,9 +381,9 @@ class Check_Box( Widget ):
         x = self.label_width() + 20
         return np.array( [x,20], dtype = int )
     
-    def draw(self, tl):
+    def draw( self, tl, force_draw = False ):
 
-        if not self.refresh_needed:
+        if force_draw == False and self.refresh_needed == False:
             return
         
         #-----------------------#

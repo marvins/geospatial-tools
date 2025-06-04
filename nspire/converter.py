@@ -62,8 +62,9 @@ def main_menu():
             if not action is None:
                 if action == 'exit':
                     exit_app = True
-                if action == 'coord':
+                elif action == 'coord':
                     action = coordinate.coord_converter()
+                    page.draw( force_draw=True )
                 break
             else:
                 sleep(0.1)
