@@ -37,6 +37,7 @@ class Page:
 
     def draw(self, force_draw = False ):
 
+        print( 'Redrawing' )
         latest_tl = self.top_left.clone()
 
         if force_draw:
@@ -58,19 +59,20 @@ class Page:
 
         #  Check for keys
         action = None
-        while True:
-            keys = get_keys()
-            for k in keys:
-                for widget in self.widgets:
-                    action = widget.check_keyboard( k )
-                    if not action is None:
-                        return action
-                if k == 'esc':
-                    return 'exit'
-                elif k == 'down':
-                    self.increment_focus()
-                elif k == 'up':
-                    self.decrement_focus()
+        keys = get_keys()
+        for k in keys:
+            for widget in self.widgets:
+                action = widget.check_keyboard( k )
+                if not action is None:
+                    return action
+            
+            print( 'Keyboard Received: ', k )
+            if k == 'esc':
+                return 'exit'
+            elif k == 'down':
+                self.increment_focus()
+            elif k == 'up':
+                self.decrement_focus()
     
     def increment_focus(self):
 
@@ -80,6 +82,7 @@ class Page:
         old_id = self.input_list[self.active]
         self.active = (self.active + 1) % len(self.input_list)
         new_id = self.input_list[self.active]
+        print( 'New Active ID: ', self.active, ', Pos: ', new_id )
 
         self.widgets[old_id].is_active = False
         self.widgets[new_id].is_active = True
@@ -97,7 +100,7 @@ class Page:
         old_id = self.input_list[self.active]
         self.active = self.active - 1
         if self.active < 0:
-            self.active = len(self.input_list-1)
+            self.active = len(self.input_list)-1
         new_id = self.input_list[self.active]
 
         self.widgets[old_id].is_active = False

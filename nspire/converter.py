@@ -54,20 +54,18 @@ def main_menu():
         #  Draw the UI
         page.draw()
         
-        #  Run the "interrupt" loop until something interest
-        for x in range( max_loops ):
-      
-            action = page.check_keyboard()
-            
-            if not action is None:
-                if action == 'exit':
-                    exit_app = True
-                elif action == 'coord':
-                    action = coordinate.coord_converter()
-                    page.draw( force_draw=True )
+        #  Check keyboard input
+        action = page.check_keyboard()
+        
+        if not action is None:
+            if action == 'exit':
+                exit_app = True
                 break
-            else:
-                sleep(0.1)
+            elif action == 'coord':
+                action = coordinate.coord_converter()
+                page.draw( force_draw=True )
+        else:
+            sleep(0.1)
   
   
 main_menu()
