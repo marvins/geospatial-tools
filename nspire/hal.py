@@ -26,6 +26,9 @@ def init_screen( **kwargs ):
     '''
     pass
 
+def get_screen_dim():
+    return (320, 320)
+
 def draw_text( text, x, y, color = Color.BLACK ):
     ti_draw.set_color( color[0], color[1], color[2] )
     ti_draw.draw_text( x, y, text )

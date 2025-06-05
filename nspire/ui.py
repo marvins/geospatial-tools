@@ -37,7 +37,6 @@ class Page:
 
     def draw(self, force_draw = False ):
 
-        print( 'Redrawing' )
         latest_tl = self.top_left.clone()
 
         if force_draw:
@@ -244,6 +243,10 @@ class Header(Widget):
         self.refresh_needed = False
 
 class Text_Input( Widget ):
+    '''
+    Required Attributes:
+    - label_text
+    '''
 
     def __init__( self, *args, **kwargs ):
         super().__init__( *args, **kwargs )
@@ -259,6 +262,8 @@ class Text_Input( Widget ):
         self.is_input = True
         if not hasattr(self,'is_active'):
             self.is_active = False
+        if not hasattr(self,'input_text'):
+            self.input_text = ''
         
     
     def label_width(self):
@@ -303,6 +308,11 @@ class Text_Input( Widget ):
                    tl[1] + sz[1] - 5 )
 
         self.refresh_needed = False
+
+    def check_keyboard(self, key):
+        
+        if len(key) == 1 and self.is_active:
+            print( 'May accept: ', key )
 
 class Button( Widget ):
 
@@ -360,6 +370,10 @@ class Button( Widget ):
                 return self.retcode
 
 class Check_Box( Widget ):
+    '''
+    Required Attributes:
+    - label_text
+    '''
 
     def __init__( self, *args, **kwargs ):
         super().__init__( *args, **kwargs )
@@ -377,7 +391,7 @@ class Check_Box( Widget ):
             self.is_active = False
 
     def label_width(self):
-        return len(self.label) * 5 + 10
+        return len(self.label_text) * 5 + 10
     
     def size( self ):
         
@@ -399,7 +413,7 @@ class Check_Box( Widget ):
                    self.label_bg_color )
 
         #  Draw the text
-        draw_text( self.label,
+        draw_text( self.label_text,
                    tl[0] + 5,
                    tl[1] + sz[1] - 5 )
 

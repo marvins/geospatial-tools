@@ -18,6 +18,8 @@ import ti_draw
 from hal   import *
 from utils import *
 
+from ui import Button, Check_Box, HBoxLayout, Header, Label, Page, Text_Input, VBoxLayout
+
 #  Global Values
 screen_size = ti_draw.get_screen_dim()
 
@@ -102,78 +104,141 @@ class Factory:
 #---------------------------------#
 #-       Geographic Input        -#
 #---------------------------------#
-def geo_dd_input( start_y, coord ):
+def geo_dd_input( is_input ):
 
-    #  Latitude Input
-    draw_rect( 15, start_y + 20, 50, 20, Color.GRAY )
+    layout = VBoxLayout()
 
-    #  Longitude Input
-    draw_rect( 100, start_y + 20, 50, 20, Color.GRAY )
+    layout.add_widget( Label( title = 'Geo Decimal Degrees' ) )
 
-def geo_dm_input( start_y, coord ):
-    pass
+    #  Span layout
+    temp_layout = HBoxLayout()
+    layout.add_widget( temp_layout )
 
-def geo_dms_input( start_y, coord ):
-    pass
+    #  Column 1:  Lat/Lon
+    c1_layout = VBoxLayout()
+    temp_layout.add_widget( c1_layout )
+    c1_layout.add_widget( Text_Input( label_text = 'Latitude: ' ) )
+    c1_layout.add_widget( Text_Input( label_text = 'Longitude: ' ) )
+    
+    #  Column 2:  Format
+    c2_layout = VBoxLayout()
+    temp_layout.add_widget( c2_layout )
+
+    c2_layout.add_widget( Check_Box( label_text = 'deg', is_active = True ) )
+    c2_layout.add_widget( Check_Box( label_text = 'rad', is_active = False ) )
+
+    return layout
+
+def geo_dm_input( is_input ):
+    
+    layout = VBoxLayout()
+
+    layout.add_widget( Label( title = 'Geo Degree-Minutes' ) )
+
+    #  Latitude Inputs
+    layout.add_widget( Label( title = 'Latitude' ) )
+    lat_layout = HBoxLayout()
+    layout.add_widget( lat_layout )
+
+    lat_layout.add_widget( Text_Input( label_text = 'Deg: ' ) )
+    lat_layout.add_widget( Text_Input( label_text = 'Min: ' ) )
+
+
+    #  Longitude Inputs
+    layout.add_widget( Label( title = 'Longitude' ) )
+    lon_layout = HBoxLayout()
+    layout.add_widget( lon_layout )
+
+    lon_layout.add_widget( Text_Input( label_text = 'Deg: ' ) )
+    lon_layout.add_widget( Text_Input( label_text = 'Min: ' ) )
+
+    return layout
+
+def geo_dms_input( is_input ):
+    
+    layout = VBoxLayout()
+
+    layout.add_widget( Label( title = 'Geo Degree-Minutes-Seconds' ) )
+
+    #  Latitude Inputs
+    layout.add_widget( Label( title = 'Latitude' ) )
+    lat_layout = HBoxLayout()
+    layout.add_widget( lat_layout )
+
+    lat_layout.add_widget( Text_Input( label_text = 'Deg: ', input_width = 50 ) )
+    lat_layout.add_widget( Text_Input( label_text = 'Min: ', input_width = 50 ) )
+    lat_layout.add_widget( Text_Input( label_text = 'Secs: ', input_width = 75 ) )
+
+
+    #  Longitude Inputs
+    layout.add_widget( Label( title = 'Longitude' ) )
+    lon_layout = HBoxLayout()
+    layout.add_widget( lon_layout )
+
+    lon_layout.add_widget( Text_Input( label_text = 'Deg: ', input_width = 50 ) )
+    lon_layout.add_widget( Text_Input( label_text = 'Min: ', input_width = 50 ) )
+    lon_layout.add_widget( Text_Input( label_text = 'Secs: ', input_width = 75 ) )
+
+    return layout
 
 #---------------------------------#
 #-           UTM Input           -#
 #---------------------------------#
-def utm_input( start_y, coord ):
+def utm_input( is_input ):
     
-    #  Grid-Zone Input
-    fill_rect( 10, start_y + 1, 80, 20, Color.GRAY )
-    draw_text( 'Grid-Zone: ', 15, start_y + 18 )
+    layout = VBoxLayout()
 
-    draw_rect( 95, start_y + 1, 100, 20, line_color = Color.GRAY )
-    draw_text( coord.grid_zone, 100, start_y + 18 )
+    layout.add_widget( Label( title = 'Universal Transverse Mercator' ) )
 
-    #  Easting Input
-    fill_rect( 10, start_y + 21, 75, 20, Color.LIGHT_GRAY )
-    draw_text( 'East (m): ', 18, start_y + 38 )
+    #  Span layout
+    temp_layout = HBoxLayout()
+    layout.add_widget( temp_layout )
 
-    draw_rect( 90, start_y + 21, 120, 20, line_color = Color.LIGHT_GRAY )
-    draw_text( coord.easting, 85, start_y + 35 )
-
-    #  Northing Input
-    fill_rect( 10, start_y + 41, 50, 20, Color.LIGHT_GRAY )
-    draw_text( 'North (m): ', 18, start_y + 58 )
-
-    draw_rect( 90, start_y + 41, 120, 20, line_color = Color.LIGHT_GRAY )
-    draw_text( coord.northing, 85, start_y + 55 )
-
-    #  Elevation Input
-    fill_rect( 10, start_y + 61, 50, 20, Color.LIGHT_GRAY )
-    draw_text( 'Z (m): ', 18, start_y + 78 )
-
-    draw_rect( 90, start_y + 61, 120, 20, line_color = Color.LIGHT_GRAY )
-    draw_text( coord.elev_m, 85, start_y + 75 )
+    #  Column 1:  Grid Zone, and other text inputs
+    c1_layout = VBoxLayout()
+    temp_layout.add_widget( c1_layout )
+    c1_layout.add_widget( Text_Input( label_text = 'Grid Zone: ' ) )
+    c1_layout.add_widget( Text_Input( label_text = 'Easting: ' ) )
+    c1_layout.add_widget( Text_Input( label_text = 'Northing: ' ) )
     
+    #  Column 2:  Hemisphere
+    c2_layout = VBoxLayout()
+    temp_layout.add_widget( c2_layout )
+
+    c2_layout.add_widget( Check_Box( label_text = 'N', is_active = True ) )
+    c2_layout.add_widget( Check_Box( label_text = 'S', is_active = False ) )
+
+    return layout
+
 #---------------------------------#
 #-           ECEF Input          -#
 #---------------------------------#
-def ecef_input( start_y, coord ):
+def ecef_input( is_input ):
     
-    #  X Input
-    fill_rect( 10, start_y + 1, 50, 20, Color.LIGHT_GRAY )
-    draw_text( 'X (m): ', 18, start_y + 18 )
+    vlayout = VBoxLayout()
+    vlayout.add_widget( Label( title = 'Earth-Centered, Earth-Fixed' ) )
 
-    draw_rect( 75, start_y + 1, 120, 20, line_color = Color.LIGHT_GRAY )
-    draw_text( coord.x, 85, start_y + 15 )
+    layout = HBoxLayout()
+    vlayout.add_widget( layout )
 
-    #  Y Input
-    fill_rect( 10, start_y + 21, 50, 20, Color.LIGHT_GRAY )
-    draw_text( 'Y (m): ', 18, start_y + 38 )
+    #--------------------
+    #  Input Layout
+    clayout = VBoxLayout()
+    layout.add_widget( clayout )
 
-    draw_rect( 75, start_y + 21, 120, 20, line_color = Color.LIGHT_GRAY )
-    draw_text( coord.y, 85, start_y + 35 )
+    # Text Inputs
+    clayout.add_widget( Text_Input( label_text = 'X: ' ) )
+    clayout.add_widget( Text_Input( label_text = 'Y: ' ) )
+    clayout.add_widget( Text_Input( label_text = 'Z: ' ) )
 
-    #  Z Input
-    fill_rect( 10, start_y + 41, 50, 20, Color.LIGHT_GRAY )
-    draw_text( 'Z (m): ', 18, start_y + 58 )
+    #  Radio Inputs
+    rlayout = VBoxLayout()
+    layout.add_widget( rlayout )
 
-    draw_rect( 75, start_y + 41, 120, 20, line_color = Color.LIGHT_GRAY )
-    draw_text( coord.z, 85, start_y + 55 )
+    rlayout.add_widget( Check_Box( label_text = 'm' ) )
+    rlayout.add_widget( Check_Box( label_text = 'km' ) )
+    
+    return vlayout
 
 
 INPUT_MAP = { TYPE_ECEF:    ecef_input,
@@ -185,192 +250,163 @@ INPUT_MAP = { TYPE_ECEF:    ecef_input,
 #--------------------------------------------#
 #-          Coordinate Input Menu           -#
 #--------------------------------------------#
-def coord_input_menu( coord_types ):
+def build_converter_panel( coord_types ):
 
-    focus_widget = 0
+    #  Create Page
+    page = Page()
 
-    input_coord  = Factory.create( coord_types[0] )
-    output_coord = Factory.create( coord_types[1] )
+    #  Create initial label
+    page.add_widget( INPUT_MAP[coord_types[0]]( is_input = True ) )
+    page.add_widget( INPUT_MAP[coord_types[1]]( is_input = False ) )
 
-    #  Iterate over input and output
-    redraw_all = True
-    while True:
+    return page
+    
 
-        #  Draw the header
-        if redraw_all:
-            ti_draw.clear()
-        
-        fill_rect( 5, 5, screen_size[0]-10, 35, Color.DODGER_BLUE )
-        draw_text( '    Coordinate Conversions   Time:  ' + format_time(localtime()) , 5, 30 )
+#-------------------------------------------#
+#-      Build Geographic Input Menu        -#
+#-------------------------------------------#
+def build_geographic_input_menu():
 
+    page = Page()
 
-        #------------------------------------#
-        #-          Input Coordinate        -#
-        #------------------------------------#
-        fill_rect( 5, 30, screen_size[0]-10, 20, Color.LIGHT_BLUE )
-        draw_text( '       ' + type_to_string( coord_types[0] ), 5, 48 )
-        draw_rect( 5, 50, screen_size[0]-10, 64, line_color = Color.LIGHT_GRAY )
+    #  Add Header
+    page.add_widget( Header( title = 'Geographic Type',
+                             show_time = True ) )
+    
+    page.add_widget( Label( title = 'Select Input Type' ) )
 
-        INPUT_MAP[coord_types[0]]( 50, input_coord )
+    page.add_widget( Button( title = 'Decimal-Degrees (d)',
+                             hotkey = 'd',
+                             retcode = 'geo_dd' ) )
+    page.add_widget( Button( title = 'Degree-Minutes (m)',
+                             hotkey = 'm',
+                             retcode = 'geo_dm' ) )
+    page.add_widget( Button( title = 'Degrees-Minutes-Seconds (s)',
+                             hotkey = 's',
+                             retcode = 'geo_dms' ) )
+    page.add_widget( Button( title = 'Exit' ) )
+    
+    return page
 
-        #------------------------------------#
-        #-          Output Coordinate       -#
-        #------------------------------------#
-        fill_rect( 5, 115, screen_size[0]-10, 20, Color.LIGHT_BLUE )
-        draw_text( '       ' + type_to_string( coord_types[1] ), 5, 131 )
-        draw_rect( 5, 135, screen_size[0]-10, 64, line_color = Color.LIGHT_GRAY )
-        
-        INPUT_MAP[coord_types[1]]( 138, output_coord )
-
-        #  Run the "interrupt" loop until something interest
-        okay_to_run = True
-        while okay_to_run:
-
-            #  Fetch keys received
-            keys = get_keys()
-            if len(keys) > 0:
-                for k in keys:
-
-                    #  Exit Menu
-                    if k == 'esc':
-                        return None
-
-                    else:
-                        print('Key Pressed: ', k)
-            else:
-                sleep(0.1)
 
 
 #--------------------------------------------#
 #-        Menu for Geographic Coordinate    -#
 #--------------------------------------------#
-def geographic_menu():
+def geographic_input_menu():
     
-    #  Draw the header
-    ti_draw.clear()
-    fill_rect( 5, 5, screen_size[0]-10, 35, Color.DODGER_BLUE )
-    draw_text( '    Coordinate Conversions   Time:  ' + format_time(localtime()) , 5, 30 )
-
-    # Draw the Content
-    draw_rect( 5, 40, screen_size[0]-10, 25, line_color = Color.BLACK )
-    draw_text( '     1) Decimal Degrees (d)',           5,  60 )
-
-    draw_rect( 5, 65, screen_size[0]-10, 25, line_color = Color.BLACK )
-    draw_text( '     2) Degrees, Minutes (m)',          5,  85 )
-
-    draw_rect( 5, 90, screen_size[0]-10, 25, line_color = Color.BLACK )
-    draw_text( '     3) Degrees, Minutes, Seconds (s)', 5, 110 )
-
-    draw_rect( 5, 115, screen_size[0]-10, 25, line_color = Color.BLACK )
-    draw_text( '  esc) Exit Application',            5, 135 )
+    page = build_geographic_input_menu()
 
     #  Run until action received
-    action = None
     while True:
 
-        #  Wait on keys
-        keys = get_keys()
-        if len(keys) > 0:
+        page.draw()
 
-            for k in keys:
-                
-                if k == 'esc':
-                    return None
-                
-                elif k == '1' or k == 'd':
-                    return TYPE_GEO_DD
-                elif k == '2' or k == 'm':
-                    return TYPE_GEO_DM
-                elif k == '3' or k == 's':
-                    return TYPE_GEO_DMS
-                else:
-                    pass
+        #  Check keyboard input
+        action = page.check_keyboard()
+
+        if not action is None:
+            
+            if action == 'exit':
+                return action
+            elif action == 'geo_dd':
+                return TYPE_GEO_DD
+            elif action == 'geo_dm':
+                return TYPE_GEO_DM
+            elif action == 'geo_dms':
+                return TYPE_GEO_DMS
+            else:
+                pass
         else:
             sleep(0.1)
+
+#--------------------------------#
+#-      Build Input Menu        -#
+#--------------------------------#
+def build_input_menu( counter ):
+
+    mode = 'Input'
+    if counter == 1:
+        mode = 'Output'
+
+    page = Page()
+
+    #  Add Header
+    page.add_widget( Header( title = 'Coordinate Conversion',
+                             show_time = True ) )
+    
+    page.add_widget( Label( title = 'Select ' + mode + ' Type' ) )
+
+    page.add_widget( Button( title = 'Geographic (g)',
+                             hotkey = 'g',
+                             retcode = 'geo' ) )
+    page.add_widget( Button( title = 'Earth-Centered, Earth-Fixed (e)',
+                             hotkey = 'e',
+                             retcode = 'ecef' ) )
+    page.add_widget( Button( title = 'Universal Transverse Mercator (u)',
+                             hotkey = 'u',
+                             retcode = 'utm' ) )
+    page.add_widget( Button( title = 'Escape (esc)' ) )
+
+    return page
 
 #---------------------------#
 #-      Primary Menu       -#
 #---------------------------#
 def coord_converter():
     
-    #  Resulting Coordinates
     coord_types = []
 
-    #  Iterate over input and output
-    redraw_all = True
-    while len(coord_types) < 2:
+    for x in range( 2 ):
 
-        #  Draw the header
-        if redraw_all:
-            ti_draw.clear()
-        
-        fill_rect( 5, 5, screen_size[0]-10, 35, Color.DODGER_BLUE )
-        draw_text( '    Coordinate Conversions   Time:  ' + format_time(localtime()) , 5, 30 )
+        #  Create fresh page
+        page = build_input_menu( x )
+        is_first_time = True
 
-        #  Draw Menu Options
-        if redraw_all:
-            hdr = 'Input'
-            if len(coord_types) == 1:
-                hdr = 'Output'
-        
-        if redraw_all:
-            fill_rect( 5, 35, screen_size[0]-10, 25, Color.LIGHT_BLUE )
-            draw_text( '    ' + hdr + ' Coordinate Type:', 5, 55 )
+        while True:
+
+            page.draw( force_draw = is_first_time )
+            is_first_time = False
+
+            #  Check keyboard input
+            action = page.check_keyboard()
+
+            if not action is None:
+
+                print( 'Action: ', action )
+                if action == 'exit':
+                    return
             
-            draw_rect( 5, 60, screen_size[0]-10, 25, line_color = Color.BLACK )
-            draw_text( '    g)  Geographic',                    5,  80 )
+                elif action == 'geo':
+                    action = geographic_input_menu()
+                    if action == 'exit':
+                        return
+                    coord_types.append( action )
+                    break
+            
+                elif action == 'utm':
+                    coord_types.append( TYPE_UTM )
+                    break
 
-            draw_rect( 5, 85, screen_size[0]-10, 25, line_color = Color.BLACK )
-            draw_text( '    e)  Earth-Centered, Earth-Fixed',   5, 105 )
+                elif action == 'ecef':
+                    coord_types.append( TYPE_ECEF )
+                    break
+    
+    #  Process Views
+    page = build_converter_panel( coord_types )
+    is_first_time = True
 
-            draw_rect( 5, 110, screen_size[0]-10, 25, line_color = Color.BLACK )
-            draw_text( '    u)  Universal Transverse Mercator', 5, 130 )
+    while True:
 
-            draw_rect( 5, 135, screen_size[0]-10, 25, line_color = Color.BLACK )
-            draw_text( ' esc)   Exit Application',            5, 155 )
+        page.draw( force_draw = is_first_time )
+        is_first_time = False
 
-        #  Run the "interrupt" loop until something interest
-        okay_to_run = True
-        while okay_to_run:
+        #  Check keyboard input
+        action = page.check_keyboard()
 
-            #  Fetch keys received
-            keys = get_keys()
-            if len(keys) > 0:
-                for k in keys:
+        if not action is None:
 
-                    #  Exit Menu
-                    if k == 'esc':
-                        return None
-
-                    #  Geographic Coordinates
-                    elif k == 'g':
-                        geo_value = geographic_menu()
-                        print( "Returned: ", geo_value )
-                        if geo_value is None:
-                            return
-                        coord_types.append( geo_value )
-                        redraw_all = True
-                        okay_to_run = False
-                        break
-
-                    elif k == 'u':
-                        coord_types.append( TYPE_UTM )
-                        redraw_all = True
-                        okay_to_run = False
-                        break
-
-                    elif k == 'e':
-                        coord_types.append( TYPE_ECEF )
-                        redraw_all = True
-                        okay_to_run = False
-                        break
-
-                    else:
-                        print('Key Pressed: ', k)
-            else:
-                sleep(0.1)
-
-    #  Perform Conversion
-    print( 'Performing Conversions ', coord_types )
-
-    coord_input_menu( coord_types )
+            if action == 'exit':
+                return
+            
+                

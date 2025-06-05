@@ -11,10 +11,6 @@
 #  Python Libraries
 from time import *
 
-#  TI Libraries
-import ti_draw
-import ti_system
-
 #  Project Libraries
 import coordinate
 from hal import *
@@ -24,7 +20,7 @@ from ui import Button, Check_Box, HBoxLayout, Header, Label, Page, Text_Input, V
 
 #  Configuration Values
 max_loops = 20
-screen_size = ti_draw.get_screen_dim()
+screen_size = get_screen_dim()
 
 
 def build_main_menu():
