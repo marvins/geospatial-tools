@@ -8,34 +8,35 @@
 #*                                                                                    *#
 #**************************** INTELLECTUAL PROPERTY RIGHTS ****************************#
 
-#  Python Libraries
-
-#  PySide Libraries
-from PySide6.QtWidgets import QMainWindow, QStackedWidget
+#  PySide6 Libraries
+from PySide6.QtWidgets import QGridLayout, QLabel, QVBoxLayout, QWidget
 
 #  Project Libraries
-from apps.main_menu.app import Main_Menu
+from header import Header
+from footer import Footer
 
-class Main_Window( QMainWindow ):
+class App_Base(QWidget):
 
-    def __init__(self):
+    def __init__( self ):
+
+        #  Build Parent
         super().__init__()
-
-        #  Setup Main Page
-        self.setWindowTitle( 'Terminus Geospatial Toolbox' )
-
-        #  Primary Widget
-        self.main_widget = QStackedWidget( self )
-
-        self.build_apps()
-
-    def build_apps( self ):
-
-        self.apps = []
-
-        #  Create Main Menu
-        self.apps.append( Main_Menu() )
         
-        
-if __name__ == '__main__':
-    main()
+        #  Primary Layout
+        self.layout = QVBoxLayout(self)
+
+        #  Create Header
+        self.header = Header( self )
+        self.layout.addWidget( self.header )
+
+        #  Create Main Widget
+        self.main_widget = self.create_main_widget()
+        self.layout.addWidget( self.main_widget )
+
+        #  Create Footer
+        self.footer = Footer( self )
+        self.layout.addWidget( self.footer )
+
+    
+    def create_buttons(self):
+        pass
