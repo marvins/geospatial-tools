@@ -1,40 +1,39 @@
 
+import PySide6.QtCore  as QtCore
+from PySide6.QtGui     import QKeySequence
 from PySide6.QtWidgets import QHBoxLayout, QToolButton, QWidget
 
 
 class Footer(QWidget):
 
+    #  Override this with layout_map parameter
+    default_button_layout = { 'ESC':  QKeySequence( QtCore.Qt.Key.Key_Escape ),
+                              'F1' :  QKeySequence( QtCore.Qt.Key.Key_F1 ),
+                              'F2' :  QKeySequence( QtCore.Qt.Key.Key_F2 ),
+                              'F3' :  QKeySequence( QtCore.Qt.Key.Key_F3 ),
+                              'F4' :  QKeySequence( QtCore.Qt.Key.Key_F4 ),
+                              'F5' :  QKeySequence( QtCore.Qt.Key.Key_F5 ) }
 
     def __init__( self, *args, **kwargs ):
         
         super().__init__()
+
+        #  Setup Layout
+        if 'button_layout' in kwargs.keys():
+            self.button_layout = kwargs['button_layout']
+        else:
+            self.button_layout = self.default_button_layout
 
         #  Setup layout
         layout = QHBoxLayout()
         self.setLayout( layout )
 
         #  Setup Buttons
-        button_esc = QToolButton()
-        button_esc.setText( 'ESC' )
-        layout.addWidget( button_esc )
+        for item in self.button_layout:
 
-        button_f1 = QToolButton()
-        button_f1.setText( 'F1' )
-        layout.addWidget( button_f1 )
+            button = QToolButton()
+            button.setText( item )
+            button.setShortcut( self.button_layout[item] )
+            layout.addWidget( button, 1 )
 
-        button_f2 = QToolButton()
-        button_f2.setText( 'F1' )
-        layout.addWidget( button_f2 )
-
-        button_f3 = QToolButton()
-        button_f3.setText( 'F1' )
-        layout.addWidget( button_f3 )
-
-        button_f4 = QToolButton()
-        button_f4.setText( 'F4' )
-        layout.addWidget( button_f4 )
-
-        button_f5 = QToolButton()
-        button_f1.setText( 'F5' )
-        layout.addWidget( button_f5 )
 

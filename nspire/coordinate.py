@@ -12,7 +12,7 @@
 from time import *
 
 #  TI Libraries
-import ti_draw
+import hal
 
 #  Project Libraries
 from hal   import *
@@ -21,7 +21,7 @@ from utils import *
 from ui import Button, Check_Box, HBoxLayout, Header, Label, Page, Text_Input, VBoxLayout
 
 #  Global Values
-screen_size = ti_draw.get_screen_dim()
+screen_size = hal.get_screen_dim()
 
 #  Enumerations
 TYPE_ECEF    = 0

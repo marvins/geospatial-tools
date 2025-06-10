@@ -26,6 +26,7 @@ class Main_Window( QMainWindow ):
 
         #  Primary Widget
         self.main_widget = QStackedWidget( self )
+        self.setCentralWidget( self.main_widget )
 
         self.build_apps()
 
@@ -35,6 +36,7 @@ class Main_Window( QMainWindow ):
 
         #  Create Main Menu
         self.apps.append( Main_Menu() )
+        self.main_widget.addWidget( self.apps[-1] )
         
         
 if __name__ == '__main__':

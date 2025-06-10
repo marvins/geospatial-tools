@@ -111,7 +111,7 @@ class PicoDisplay(framebuf.FrameBuffer):
             raise ValueError("Unknown LUT name. Use 'vt100' or 'pico8'.")
 
     def getLUT(self):
-        return picocalcdisplay.getLUTview().cast("H")
+        return picocalcdisplay.getLUTview()
 
     def setLUT(self,lut):
         if not (isinstance(lut, array.array)):
