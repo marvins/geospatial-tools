@@ -1,4 +1,3 @@
-
 import os
 
 
@@ -82,3 +81,6 @@ def expanduser(s):
         # Sorry folks, follow conventions
         return "/home/" + s[1:]
     return s
+
+
+__version__ = '0.2.0'

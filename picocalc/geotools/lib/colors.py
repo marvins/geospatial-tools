@@ -1,6 +1,14 @@
 
 #  Codes per GS4_HMSB
 class GS4:
+    BLACK      =  0
+    GRAY       =  8
+    RED		   =  9
+    GREEN 	   = 10
+    YELLOW     = 11
+    BLUE       = 12
+    PURPLE     = 13
+    CYAN       = 14
     LIGHT_BLUE = 15
 
 class RGB_565:
