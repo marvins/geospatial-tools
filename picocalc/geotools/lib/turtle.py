@@ -1,6 +1,5 @@
 
 #  Micropython Libraries
-from enum import Enum
 import framebuf
 
 # PicoCalc Libraries
@@ -8,8 +7,10 @@ import picocalc
 
 class Key(Enum):
     '''
-    This class is organized by the value of the first entry.  Note the keyboard API
-    tends 
+    This class is organized by the value of the first entry.
+
+    Btw, Micropython really needs to just add the Enum API, as this would be far
+    easier without having to use attribute APIs.
     '''
     Key_UNKNOWN    = (   0 )                 #  This should be an error condition
     Key_TAB        = (   9 )
@@ -93,6 +94,27 @@ class Key(Enum):
     def is_letter( key ):
         return Key.is_uppercase_letter( key ) or Key.is_lowercase_letter( key )
 
+    @staticmethod
+    def is_char( key ):
+        if isinstance( key, int ):
+            return True
+        else:
+            return False
+
+    def get_char( key ):
+
+        for key_type in dir(Key):
+            if 'Key_' in str(key_type):
+                if getattr(Key, str(key_type))[0] == key:
+                    return getattr(Key, str(key_type))
+        return Key.Key_UNKNOWN
+
+    @staticmethod
+    def name( value ):
+        for key_type in dir(Key):
+            if 'Key_' in str(key_type):
+                if getattr(Key, str(key_type))[0] == value:
+                    return key_type
 
     @staticmethod
     def pop_next( arr ):
@@ -147,8 +169,7 @@ class Key(Enum):
             
             # All single-value keys
             else:
-                for k in Key:
-                    print(k)
+                return Key.get_char( key )
 
 
         return key, arr
@@ -197,5 +218,9 @@ def check_keyboard():
         output.append( temp[0] )
 
     # Try to discern specific keys
+    keys = []
+    while len( output ) > 0:
+        k, output = Key.pop_next( output )
+        keys.append( k )
 
-    return output
+    return keys
