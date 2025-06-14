@@ -94,7 +94,7 @@ os.makedirs('/lib')
 
 ### 8. Copy Project files
 
-**Note:** I have the `os-path` project in this folder.   You can skip this if you want ot use Micropython's PIP API in Thonny instead.
+**Note:** I have the Micropython `logging` and `os-path` sources already added to this folder.   You can skip this if you want ot use Micropython's PIP API in Thonny instead.
 
 **Process:** Copy `./lib` to `/lib` on the Pico.
 
@@ -113,6 +113,8 @@ This wraps the `picocalc` API and other tools to create a mildly functional vers
 
 ## Tools
 
+### `browser.py`
+
 ### `keytest.py`
 
 This is a simple script to log the values of keys pressed.  This can be clutch when you are writing an app and you want to know what a particular key is.  This will print values to the terminal until you press Escape. The escape value will be printed, and the application will exit.
@@ -128,4 +130,5 @@ In this example, I disabled the `p` character so it would register as unknown.  
  <img src='./docs/images/keytest.jpg' width='50%' />
 </center>
 
+<span style="color:red"><b><u>TODO:</u></b></span> Use the turtle display API to allow taking screenshots.
 

@@ -1,16 +1,15 @@
 
 #  Micropython Libraries
 import logging
-import os
-import sys
 import time
 
 #  Project Libraries
 import colors
 import turtle
 
-
-def run( cdir = '.', log_level = logging.DEBUG, log_path = './browser.log' ):
+#  Run Test
+def run( log_level = logging.DEBUG,
+         log_path  = './browser.log' ):
     
     #  Setup Logger
     if not log_path is None:
@@ -47,6 +46,3 @@ def run( cdir = '.', log_level = logging.DEBUG, log_path = './browser.log' ):
     screen.reset()
 
     logging.debug( 'Exiting Application' )
-    
-
-

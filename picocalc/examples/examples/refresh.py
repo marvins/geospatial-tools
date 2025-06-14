@@ -32,7 +32,7 @@ while(True):
 
 terminal.recoverRefresh()
 display.fill(0) #clean the screen
-display.restLUT()
+display.resetLUT()
 terminal.wr("\x1b[2J\x1b[H")#move the cursor to the top, and clear the terminal buffer
 
 terminal.wr("\x1b[?25h")  # show cursor

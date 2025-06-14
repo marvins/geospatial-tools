@@ -1,10 +1,13 @@
 
 #  Micropython Libraries
 import framebuf
+import logging
+import time
 
 # PicoCalc Libraries
 import picocalc
 from picocalc import display, keyboard, terminal
+
 
 class Key:
     '''
@@ -270,6 +273,9 @@ KEYMAP = { Key.UNKNOWN       : (   0, ) ,
 }
 
 class Keyboard:
+    '''
+    Contains methods for querying keys.
+    '''
 
     @staticmethod
     def is_lowercase_letter( key ):
@@ -342,48 +348,74 @@ class Keyboard:
 
 class TurtleScreen:
 
-    def __init__(self, display ):
+    def __init__(self):
 
-        self.display = display
+        terminal.wr("\x1b[?25l")  # hide cursor
+        terminal.stopRefresh()
 
     def reset( self ):
-        pass
+        '''
+        This was lifted from the refresh.py example.
+        Basically, put things back the way we found them.
+        
+        @todo:  Actually capture original values from init calls
+                so it's actually a reset call.
+        '''
+        terminal.recoverRefresh()
+        display.fill(0)
+        display.resetLUT()
+        terminal.wr("\x1b[2J\x1b[H")#move the cursor to the top, and clear the terminal buffer
+        terminal.wr("\x1b[?25h")  # show cursor
+
+    def wait_update_finished( self, max_iters = 1000 ):
+
+        #  Make sure we are still not drawing
+        counter = 0
+        while display.isScreenUpdateDone():
+            time.sleep(0.1)
+            counter += 1
+            if not max_iters is None:
+                if counter >= max_iters:
+                    logging.error( 'Screen update never finished')
+                    break
+
+        return
 
     def fill( self, color ):
-        self.display.fill( color )
+        display.fill( color )
+        display.show()
 
     def fill_rect( self, x, y, w, h, color ):
-        self.display.fill_rect( x, y, w, h, color )
+        display.fill_rect( x, y, w, h, color )
 
     def draw_text( self, text, x, y, color ):
-        self.display.text( text, x, y, color )
+        display.text( text, x, y, color )
+        display.show()
 
     def show( self ):
-        self.display.show()
+        display.show()
 
     def log_info(self):
 
-        print(self.display.getLUT())
+        print(display.getLUT())
 
 def screensize():
     return (320,320)
 
-def init( w, h, 
-          format = framebuf.GS4_HMSB,
-          skip_init = False ):
+def init():
 
-    disp = picocalc.PicoDisplay( w, h, 
-                                 color_type = format,
-                                 skip_init = skip_init )
+    return TurtleScreen()
 
-    return TurtleScreen( disp )
-
-def check_keyboard():
+def check_keyboard( verbose ):
 
     output = []
     temp = bytearray(1)
     while keyboard.readinto(temp):
         output.append( temp[0] )
+    
+    #  Log keyboard input
+    if verbose:
+        print( 'Keys Read: ', output )
 
     # Try to discern specific keys
     keys = []

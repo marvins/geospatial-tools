@@ -24,9 +24,14 @@ def ensure_nested_dir(path):
 
 
 class vt(uio.IOBase):
-    
+    '''
+    Underlying Virtual Terminal
+    This is the `terminal` object in `picocalc.py`. 
 
-    def __init__(self,framebuf,keyboard,screencaptureKey=0x15,sd=None,captureFolder="/"): #ctrl+U for screen capture
+    '''
+
+    def __init__( self, framebuf, keyboard, screencaptureKey=0x15, sd=None, captureFolder = "/" ): 
+        #ctrl+U for screen capture
         if sd != None:
             if not captureFolder.startswith("/"):
                 captureFolder = "/"+captureFolder
