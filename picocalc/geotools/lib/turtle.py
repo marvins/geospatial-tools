@@ -3,79 +3,256 @@
 import framebuf
 
 # PicoCalc Libraries
-import picocalc 
+import picocalc
+from picocalc import display, keyboard, terminal
 
-class Key(Enum):
+class Key:
     '''
-    This class is organized by the value of the first entry.
+    This is a mapping of each key against it's "name"
+    - Some keys use a formal name, specifically if it's not actual an ascii character
+    - Some keys use a formal name, despite having an ascii character.  I don't really want space being a name
+    '''
 
-    Btw, Micropython really needs to just add the Enum API, as this would be far
-    easier without having to use attribute APIs.
-    '''
-    Key_UNKNOWN    = (   0 )                 #  This should be an error condition
-    Key_TAB        = (   9 )
-    Key_ENTER      = (  13 )                 # Key:  Enter
-    Key_ESCAPE     = (  27,  27 )            # Key:  Escape key
-    Key_INSERT     = (  27,  73 )            # Key:  Insert
-    Key_DELETE     = (  27,  91,  51, 126 )  # Key:  Delete
-    Key_END        = (  27,  91,  70 )       # Key:  Home
-    Key_HOME       = (  27,  91,  72 )       # Key:  Home
-    Key_SPACE      = (  32 )                 # Key:  " " (Spacebar)
-    Key_BANG       = (  33 )                 # Key:  !   (Exclaimation-Point)
-    Key_DBQUOTE    = (  34 )                 # Key:  "   (Double-Quote)
-    Key_HASH       = (  35 )                 # Key:  #   (Octothorpe)
-    Key_DOLLAR     = (  36 )                 # Key:  $   (Dollar-Sign)
-    Key_PERCENT    = (  37 )                 # Key:  %   (Percent)
-    Key_AMPERSAND  = (  38 )                 # Key:  &   (Ampersand)
-    Key_QUOTE      = (  39 )                 # Key:  '   (Single-Quote)
-    Key_LPAREN     = (  40 )                 # Key:  (   (Left-Parenthesis)
-    Key_RPAREN     = (  41 )                 # Key:  )   (Right-Parenthesis)
-    Key_STAR       = (  42 )                 # Key:  *   (Star / Multiply)
-    Key_PLUS       = (  43 )                 # Key:  +   (Plus-Sign)
-    Key_COMMA      = (  44 )                 # Key:  ,   (Comma)
-    Key_MINUS      = (  45 )                 # Key:  -   (Minus)
-    Key_PERIOD     = (  46 )                 # Key:  .   (Period)
-    Key_SLASH      = (  47 )
-    Key_0          = (  48 )
-    Key_1          = (  49 )
-    Key_2          = (  50 )
-    Key_3          = (  51 )
-    Key_4          = (  52 )
-    Key_5          = (  53 )
-    Key_6          = (  54 )
-    Key_7          = (  55 )
-    Key_8          = (  56 )
-    Key_9          = (  57 )
-    Key_COLON      = (  58 )
-    Key_SEMICOLON  = (  59 )
-    Key_LANGLE     = (  60 )                # Key:  < (Left Angle-Bracket)
-    Key_EQUAL      = (  61 )                # Key:  = (Equal Sign)
-    Key_RANGLE     = (  62 )                # Key:  > (Right Angle-Bracket)
-    Key_QUESTION   = (  63 )
-    Key_AT         = (  64 )
-    Key_LBRACKET   = (  91 )
-    Key_BACKSLASH  = (  92 )
-    Key_RBRACKET   = (  93 )                # Key: ] (Right-Bracket)
-    Key_CARROT     = (  94 )                # Key: ^ (Carrot)
-    Key_UNDERSCORE = (  95 )
-    Key_TICK       = (  96 )
-    Key_LBRACE     = ( 123 )                # Key: { (Left-Squigly-Brace)
-    Key_PIPE       = ( 124 )
-    Key_RBRACE     = ( 125 )
-    Key_TILDE      = ( 126 )
-    Key_BACK       = ( 127 )
-    Key_F1         = ( 129 )
-    Key_F2         = ( 130 )
-    Key_F3         = ( 131 )
-    Key_F4         = ( 132 )
-    Key_F5         = ( 133 )
-    Key_F6         = ( 134 )
-    Key_F7         = ( 135 )
-    Key_F8         = ( 136 )
-    Key_F9         = ( 137 )
-    Key_F10        = ( 144 )
-    Key_CAPS_LOCK  = ( 193 )
-    Key_BREAK      = ( 208 )
+    UNKNOWN       =  'unknown'       #  This should be an error condition
+    TAB           =  'tab'           #  Key:  Tab
+    ENTER         =  'enter'         #  Key:  Enter / Carriage Return
+    ESCAPE        =  'escape'        #  Key:  Escape / Esc
+    INSERT        =  'insert'        #  Key:  Insert
+    DELETE        =  'delete'        #  Key:  Delete
+    END           =  'end'           #  Key:  End
+    HOME          =  'home'          #  Key:  Home
+    SPACE         =  'space'         #  Key:  Spacebar
+    EXCLAM        =  '!'             #  Key:  Exclaimation Point / Bang
+    DBL_QUOTE     =  'double_quote'  #  Key:  Double-Quote / "
+    NUMBER_SIGN   =  '#'             #  Key:  Hash / Octothorpe
+    DOLLAR        =  '$'             #  Key:  Dollar Sign
+    PERCENT       =  '%'             #  Key:  Modulo / Percent
+    AMPERSAND     =  '&'             #  Key:  Ampersand
+    QUOTE         =  'single_quote'  #  Key:  Single-Quote
+    PAREN_L       =  'left_paren'    #  Key:  (
+    PAREN_R       =  'right_paren'   #  Key:  )
+    ASTERISK      =  '*'             #  Key:  *
+    PLUS          =  '+'             #  Key:  +
+    COMMA         =  ','             #  Key:  ,
+    MINUS         =  '-'             #  Key:  -
+    PERIOD        =  '.'             #  Key:  .
+    SLASH         =  'slash'         #  Key:  Slash
+    DIGIT_0       =  '0'             #  Key:  Number 0
+    DIGIT_1       =  '1'             #  Key:  Number 1
+    DIGIT_2       =  '2'             #  Key:  Number 2
+    DIGIT_3       =  '3'             #  Key:  Number 3
+    DIGIT_4       =  '4'             #  Key:  Number 4
+    DIGIT_5       =  '5'             #  Key:  Number 5
+    DIGIT_6       =  '6'             #  Key:  Number 6
+    DIGIT_7       =  '7'             #  Key:  Number 7
+    DIGIT_8       =  '8'             #  Key:  Number 8
+    DIGIT_9       =  '9'             #  Key:  Number 9
+    COLON         =  ':'             #  Key:  Colon
+    SEMICOLON     =  ';'             #
+    LESS_THAN     =  '<'             #
+    EQUAL         =  '='             #
+    GREATER_THAN  =  '>'             #
+    QUESTION      =  '?'             #
+    AT            =  '@'             #
+    LEFT_BRACKET  =  '['             #
+    BACKSLASH     =  'backslash'     #
+    RIGHT_BRACKET = ']'              #
+    CARROT        = '^'              #
+    UNDERSCORE    = '_'              #
+    TICK          = '`'              #
+    A_LOWER       = 'a'              #
+    B_LOWER       = 'b'              #
+    C_LOWER       = 'c'              #
+    D_LOWER       = 'd'              #
+    E_LOWER       = 'e'              #
+    F_LOWER       = 'f'              #
+    G_LOWER       = 'g'              #
+    H_LOWER       = 'h'              #
+    I_LOWER       = 'i'              #
+    J_LOWER       = 'j'              #
+    K_LOWER       = 'k'              #
+    L_LOWER       = 'l'              #
+    M_LOWER       = 'm'              #
+    N_LOWER       = 'n'              #
+    O_LOWER       = 'o'              #
+    P_LOWER       = 'p'              #
+    Q_LOWER       = 'q'              #
+    R_LOWER       = 'r'              #
+    S_LOWER       = 's'              #
+    T_LOWER       = 't'              #
+    U_LOWER       = 'u'              #
+    V_LOWER       = 'v'              #
+    W_LOWER       = 'w'              #
+    X_LOWER       = 'x'              #
+    Y_LOWER       = 'y'              #
+    Z_LOWER       = 'z'              #
+    A_UPPER       = 'A'              #
+    B_UPPER       = 'B'              #
+    C_UPPER       = 'C'              #
+    D_UPPER       = 'D'              #
+    E_UPPER       = 'E'              #
+    F_UPPER       = 'F'              #
+    G_UPPER       = 'G'              #
+    H_UPPER       = 'H'              #
+    I_UPPER       = 'I'              #
+    J_UPPER       = 'J'              #
+    K_UPPER       = 'K'              #
+    L_UPPER       = 'L'              #
+    M_UPPER       = 'M'              #
+    N_UPPER       = 'N'              #
+    O_UPPER       = 'O'              #
+    P_UPPER       = 'P'              #
+    Q_UPPER       = 'Q'              #
+    R_UPPER       = 'R'              #
+    S_UPPER       = 'S'              #
+    T_UPPER       = 'T'              #
+    U_UPPER       = 'U'              #
+    V_UPPER       = 'V'              #
+    W_UPPER       = 'W'              #
+    X_UPPER       = 'X'              #
+    Y_UPPER       = 'Y'              #
+    Z_UPPER       = 'Z'              #
+    LEFT_BRACE   =  '{'              #
+    PIPE          =  '|'             #
+    RIGHT_BRACE  =  '}'              #
+    TILDE        =  '~'              #
+    BACKSPACE    =  'backspace'      #
+    F1           =  'F1'             #
+    F2           =  'F2'             #
+    F3           =  'F3'             #
+    F4           =  'F4'             #
+    F5           =  'F5'             #
+    F6           =  'F6'             #
+    F7           =  'F7'             #
+    F8           =  'F8'             #
+    F9           =  'F9'             #
+    F10          =  'F10'            #
+    CAPS_LOCK    =  'capslock'       #
+    BREAK        =  'break'
+
+
+#  This provides a mapping between each key, and the ioctl values
+#  which map.  Some of these are straight ASCII, whereas others are 
+#  more complex. 
+KEYMAP = { Key.UNKNOWN       : (   0, ) ,                
+           Key.TAB           : (   9, ) ,                
+           Key.ENTER         : (  13, ) ,                
+           Key.ESCAPE        : (  27,  27 ) ,             # Key:  Escape key
+           Key.INSERT        : (  27,  73 ) ,             # Key:  Insert
+           Key.DELETE        : (  27,  91,  51, 126 ) ,   # Key:  Delete
+           Key.END           : (  27,  91,  70 ) ,        # Key:  Home
+           Key.HOME          : (  27,  91,  72 ) ,        # Key:  Home
+           Key.SPACE         : (  32, ) ,                 # Key:  " " (Spacebar)
+           Key.EXCLAM        : (  33, ) ,                 # Key:  !   (Exclaimation-Point)
+           Key.DBL_QUOTE     : (  34, ) ,                 # Key:  "   (Double-Quote)
+           Key.NUMBER_SIGN   : (  35, ) ,                 # Key:  #   (Octothorpe)
+           Key.DOLLAR        : (  36, ) ,                 # Key:  $   (Dollar-Sign)
+           Key.PERCENT       : (  37, ) ,                 # Key:  %   (Percent)
+           Key.AMPERSAND     : (  38, ) ,                 # Key:  &   (Ampersand)
+           Key.QUOTE         : (  39, ) ,                # Key:  '   (Single-Quote)
+           Key.PAREN_L       : (  40, ) ,                # Key:  (   (Left-Parenthesis)
+           Key.PAREN_R       : (  41, ) ,                # Key:  )   (Right-Parenthesis)
+           Key.ASTERISK      : (  42, ) ,                # Key:  *   (Star / Multiply)
+           Key.PLUS          : (  43, ) ,                # Key:  +   (Plus-Sign)
+           Key.COMMA         : (  44, ) ,                # Key:  ,   (Comma)
+           Key.MINUS         : (  45, ) ,                # Key:  -   (Minus)
+           Key.PERIOD        : (  46, ) ,                # Key:  .   (Period)
+           Key.SLASH         : (  47, ) ,                # Key: 
+           Key.DIGIT_1       : (  49, ) ,                # Key: 
+           Key.DIGIT_0       : (  48, ) ,                # Key: 
+           Key.DIGIT_2       : (  50, ) ,                # Key: 
+           Key.DIGIT_3       : (  51, ) ,                # Key: 
+           Key.DIGIT_4       : (  52, ) ,                # Key: 
+           Key.DIGIT_5       : (  53, ) ,                # Key: 
+           Key.DIGIT_6       : (  54, ) ,                # Key: 
+           Key.DIGIT_7       : (  55, ) ,                # Key: 
+           Key.DIGIT_8       : (  56, ) ,                # Key: 
+           Key.DIGIT_9       : (  57, ) ,                # Key: 
+           Key.COLON         : (  58, ) ,                # Key: 
+           Key.SEMICOLON     : (  59, ) ,                # Key: 
+           Key.LESS_THAN     : (  60, ) ,                # Key:  < (Left Angle-Bracket)
+           Key.EQUAL         : (  61, ) ,                # Key:  = (Equal Sign)
+           Key.GREATER_THAN  : (  62, ) ,                # Key:  > (Right Angle-Bracket)
+           Key.QUESTION      : (  63, ) ,                # Key: 
+           Key.AT            : (  64, ) ,                # Key: 
+           Key.A_UPPER       : (  65, ) ,
+           Key.B_UPPER       : (  66, ) ,
+           Key.C_UPPER       : (  67, ) ,
+           Key.D_UPPER       : (  68, ) ,
+           Key.E_UPPER       : (  69, ) ,
+           Key.F_UPPER       : (  70, ) ,
+           Key.G_UPPER       : (  71, ) ,
+           Key.H_UPPER       : (  72, ) ,
+           Key.I_UPPER       : (  73, ) ,
+           Key.J_UPPER       : (  74, ) ,
+           Key.K_UPPER       : (  75, ) ,
+           Key.L_UPPER       : (  76, ) ,
+           Key.M_UPPER       : (  77, ) ,
+           Key.N_UPPER       : (  78, ) ,
+           Key.O_UPPER       : (  79, ) ,
+           Key.P_UPPER       : (  80, ) ,
+           Key.Q_UPPER       : (  81, ) ,
+           Key.R_UPPER       : (  82, ) ,
+           Key.S_UPPER       : (  83, ) ,
+           Key.T_UPPER       : (  84, ) ,
+           Key.U_UPPER       : (  85, ) ,
+           Key.V_UPPER       : (  86, ) ,
+           Key.W_UPPER       : (  87, ) ,
+           Key.X_UPPER       : (  88, ) ,
+           Key.Y_UPPER       : (  89, ) ,
+           Key.Z_UPPER       : (  90, ) ,
+           Key.LEFT_BRACKET  : (  91, ) ,                # Key: 
+           Key.BACKSLASH     : (  92, ) ,                # Key: 
+           Key.RIGHT_BRACKET : (  93, ) ,                # Key: ] (Right-Bracket)
+           Key.CARROT        : (  94, ) ,                # Key: ^ (Carrot)
+           Key.UNDERSCORE    : (  95, ) ,                # Key: 
+           Key.TICK          : (  96, ) ,                # Key: 
+           Key.A_LOWER       : (  97, ) ,
+           Key.B_LOWER       : (  98, ) ,
+           Key.C_LOWER       : (  99, ) ,
+           Key.D_LOWER       : ( 100, ) ,
+           Key.E_LOWER       : ( 101, ) ,
+           Key.F_LOWER       : ( 102, ) ,
+           Key.G_LOWER       : ( 103, ) ,
+           Key.H_LOWER       : ( 104, ) ,
+           Key.I_LOWER       : ( 105, ) ,
+           Key.J_LOWER       : ( 106, ) ,
+           Key.K_LOWER       : ( 107, ) ,
+           Key.L_LOWER       : ( 108, ) ,
+           Key.M_LOWER       : ( 109, ) ,
+           Key.N_LOWER       : ( 110, ) ,
+           Key.O_LOWER       : ( 111, ) ,
+           Key.P_LOWER       : ( 112, ) ,
+           Key.Q_LOWER       : ( 113, ) ,
+           Key.R_LOWER       : ( 114, ) ,
+           Key.S_LOWER       : ( 115, ) ,
+           Key.T_LOWER       : ( 116, ) ,
+           Key.U_LOWER       : ( 117, ) ,
+           Key.V_LOWER       : ( 118, ) ,
+           Key.W_LOWER       : ( 119, ) ,
+           Key.X_LOWER       : ( 120, ) ,
+           Key.Y_LOWER       : ( 121, ) ,
+           Key.Z_LOWER       : ( 122, ) ,
+           Key.LEFT_BRACE    : ( 123, ) ,                # Key: { (Left-Squigly-Brace)
+           Key.PIPE          : ( 124, ) ,                # Key: 
+           Key.RIGHT_BRACE   : ( 125, ) ,                # Key: 
+           Key.TILDE         : ( 126, ) ,                # Key: 
+           Key.BACKSPACE     : ( 127, ) ,                # Key: 
+           Key.F1            : ( 129, ) ,                # Key: 
+           Key.F2            : ( 130, ) ,                # Key: 
+           Key.F3            : ( 131, ) ,                # Key: 
+           Key.F4            : ( 132, ) ,                # Key: 
+           Key.F5            : ( 133, ) ,                # Key: 
+           Key.F6            : ( 134, ) ,                # Key: 
+           Key.F7            : ( 135, ) ,                # Key: 
+           Key.F8            : ( 136, ) ,                # Key: 
+           Key.F9            : ( 137, ) ,                # Key: 
+           Key.F10           : ( 144, ) ,                # Key: 
+           Key.CAPS_LOCK     : ( 193, ) ,                # Key: 
+           Key.BREAK         : ( 208, )                  # Key: 
+}
+
+class Keyboard:
 
     @staticmethod
     def is_lowercase_letter( key ):
@@ -96,25 +273,27 @@ class Key(Enum):
 
     @staticmethod
     def is_char( key ):
-        if isinstance( key, int ):
+        if Key.is_letter( key ):
             return True
-        else:
-            return False
+        return False
 
-    def get_char( key ):
-
-        for key_type in dir(Key):
-            if 'Key_' in str(key_type):
-                if getattr(Key, str(key_type))[0] == key:
-                    return getattr(Key, str(key_type))
-        return Key.Key_UNKNOWN
+    def get_char( value ):
+        '''
+        Match the value against the table
+        '''
+        for key in KEYMAP.keys():
+            if KEYMAP[key] == value:
+                return key
+        return None
 
     @staticmethod
     def name( value ):
         for key_type in dir(Key):
             if 'Key_' in str(key_type):
-                if getattr(Key, str(key_type))[0] == value:
+                if getattr(Key, str(key_type)) == value:
                     return key_type
+        if Key.is_char():
+            return chr(value)
 
     @staticmethod
     def pop_next( arr ):
@@ -122,57 +301,26 @@ class Key(Enum):
         Given an array, pop the next key off, returning the key and the remainder of the array
         '''
 
+        #  We only pop off one item at a time, so remaining items will be returned
         arr = list(arr)
-        key = None
-
         current = []
 
         while len( arr ) > 0:
 
-            # Get next key
-            k = arr.pop(0)
+            #  Get next entry from ioctl
+            current.append( arr.pop(0) )
 
-            #  If we have 27, and previous value was 27, it's Escape
-            if k == 27 and len(current) > 0 and current[-1] == 27:
-                key = Key.Key_ESCAPE
-                current = []
-                break
-            
-            # Otherwise, if we have 27, then it's the start of a special key
-            elif k == 27:
-                current.append( k )
+            #  Convert to tuple so we can compare against KEYMAP
+            temp = tuple(current)
+
+            #  Check value            
+            key = Keyboard.get_char( temp )
+
+            if key is None:
                 continue
+            return key, arr
 
-            #  Otherwise, if we don't have 27, and we have an active entry, check 
-            elif len(current) > 0 and current[0] == 27:
-
-                # Append to current variable
-                current.append( k )
-                temp = tuple(current)
-
-                # Check if there is a match
-                if temp == Key.Key_INSERT:
-                    key = Key.Key_INSERT
-                    break
-                elif temp == Key.Key_DELETE:
-                    key = Key.Key_DELETE
-                    break
-                elif temp == Key.Key_END:
-                    key = Key.Key_END
-                    break
-                elif temp == Key.Key_HOME:
-                    key = Key.Key_HOME
-                    break
-                else:
-                    key = Key.Key_UNKNOWN
-                    break
-            
-            # All single-value keys
-            else:
-                return Key.get_char( key )
-
-
-        return key, arr
+        return None, arr
 
 
 class TurtleScreen:
@@ -180,6 +328,9 @@ class TurtleScreen:
     def __init__(self, display ):
 
         self.display = display
+
+    def reset( self ):
+        pass
 
     def fill( self, color ):
         self.display.fill( color )
@@ -214,13 +365,13 @@ def check_keyboard():
 
     output = []
     temp = bytearray(1)
-    while picocalc.keyboard.readinto(temp):
+    while keyboard.readinto(temp):
         output.append( temp[0] )
 
     # Try to discern specific keys
     keys = []
     while len( output ) > 0:
-        k, output = Key.pop_next( output )
+        (k, output) = Keyboard.pop_next( output )
         keys.append( k )
 
     return keys
