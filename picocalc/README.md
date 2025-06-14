@@ -124,6 +124,8 @@ kt.run()
 
 In this example, I disabled the `p` character so it would register as unknown.  See how unknown characters get returned...
 
-![Screenshot](./docs/images/keytest.jpg)
+<center>
+ <img src='./docs/images/keytest.jpg' width='50%' />
+</center>
 
 
