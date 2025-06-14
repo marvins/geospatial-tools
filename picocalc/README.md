@@ -1,6 +1,15 @@
 #  PicoCalc Micropython Setup
 
-I find setting up the MicroPython build infuriating and I'm just not getting it correct.  Thankfully, the amazing community has a built MicroPython build.  
+I am finding embedded development to be an infuriating experience.  Thank you to the community for making this barely understandable for my primitive brain.
+
+## Features
+
+* Libraries:
+    * `picocalc.py` : Minor updates to `zenodante`'s API.
+    * `turtle.py`   : My start of a turtle API for PicoCalc.
+* Tools:
+    * `keytest.py` :  Script for logging keyboard inputs
+
 
 ## References:
 
@@ -8,9 +17,9 @@ I find setting up the MicroPython build infuriating and I'm just not getting it 
 
 ## Pre-Setup Notes:
 
-* I chose to not use `zenodante`'s approach to compile the core APIs as frozen files.  This makes it impossible to edit them.   
+* I chose to not use `zenodante`'s approach to compile the core APIs as frozen files.  This makes it impossible to edit them from my laptop after you setup the PicoCalc.
 
-* I instead only transfer the `boot.py` and `main.py` for the filesystem variant. 
+* I instead only keep the `boot.py` and `main.py` from the filesystem variant. Everything else goes into this `./lib` folder.
 
 * I have copies of the files, latest as of 6/13/2025, in my repo.  I modified them a bit, as a few minor parts if his APIs are non-functional. 
 
@@ -26,6 +35,16 @@ I duplicated the effort by doing the following:
 ```bash
 mkdir workspace
 pushd workspace
+```
+
+**Note:** The final structure will look like this:
+
+```bash
+tree -L 1 ./workspace
+./workspace
+├── eigenmath_micropython
+├── micropython
+└── PicoCalc-micropython-driver
 ```
 
 ### 2. Clone `PicoCalc-micropython-driver` repo into workspace folder. 
@@ -57,6 +76,7 @@ popd
 
 ### 5. Setup Micropython build
 
+<span style="color:red"><b><u>TODO: Write instructions</u></b></span>
 ```bash
 
 ```
@@ -80,16 +100,30 @@ os.makedirs('/lib')
 
 ---
 
-## Utilities
+## Libraries
 
-### `keyboard_tester.py`
+### `turtle.py`
+
+This wraps the `picocalc` API and other tools to create a mildly functional version of turtle. 
+
+
+
+
+---
+
+## Tools
+
+### `keytest.py`
 
 This is a simple script to log the values of keys pressed.  This can be clutch when you are writing an app and you want to know what a particular key is.  This will print values to the terminal until you press Escape. The escape value will be printed, and the application will exit.
 
 ```python
-import keyboard_tester as kt
+import keytest as kt
 kt.run()
 ```
 
+In this example, I disabled the `p` character so it would register as unknown.  See how unknown characters get returned...
+
+![Screenshot](./docs/images/keytest.jpg)
 
 

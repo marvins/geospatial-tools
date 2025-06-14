@@ -129,7 +129,20 @@ class Key:
     F10          =  'F10'            #
     CAPS_LOCK    =  'capslock'       #
     BREAK        =  'break'
+    LEFT_ARROW   =  'left_arrow'
+    RIGHT_ARROW  =  'right_arrow'
+    UP_ARROW     =  'up_arrow'
+    DOWN_ARROW   =  'down_arrow'
 
+    @staticmethod
+    def to_key( k ):
+
+        value = None
+        try:
+            value = KEYMAP[k]
+        except Exception:
+            return Key.UNKNOWN
+        return value
 
 #  This provides a mapping between each key, and the ioctl values
 #  which map.  Some of these are straight ASCII, whereas others are 
@@ -140,7 +153,11 @@ KEYMAP = { Key.UNKNOWN       : (   0, ) ,
            Key.ESCAPE        : (  27,  27 ) ,             # Key:  Escape key
            Key.INSERT        : (  27,  73 ) ,             # Key:  Insert
            Key.DELETE        : (  27,  91,  51, 126 ) ,   # Key:  Delete
-           Key.END           : (  27,  91,  70 ) ,        # Key:  Home
+           Key.UP_ARROW      : (  27,  91,  65 ) ,        # Key:  Up Arrow
+           Key.DOWN_ARROW    : (  27,  91,  66 ) ,        # Key:  Down Arrow
+           Key.RIGHT_ARROW   : (  27,  91,  67 ) ,        # Key:  Right Arrow Key
+           Key.LEFT_ARROW    : (  27,  91,  68 ) ,        # Key:  Left Arrow Key
+           Key.END           : (  27,  91,  70 ) ,        # Key:  End
            Key.HOME          : (  27,  91,  72 ) ,        # Key:  Home
            Key.SPACE         : (  32, ) ,                 # Key:  " " (Spacebar)
            Key.EXCLAM        : (  33, ) ,                 # Key:  !   (Exclaimation-Point)
@@ -320,7 +337,7 @@ class Keyboard:
                 continue
             return key, arr
 
-        return None, arr
+        return 'UNKNOWN[' + str(temp) + ']', arr
 
 
 class TurtleScreen:
