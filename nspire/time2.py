@@ -69,12 +69,13 @@ def gmtime():
     tm.tm_yday = int( int( secs ) / SECS_PER_DAY )
 
     tm.tm_hour = int( ( int( secs ) % SECS_PER_DAY ) / 3600 )
-    print('Part 1: ', int(secs)%SECS_PER_DAY, ', tm hour: ', tm.tm_hour)
     
     #  Unix time starts in 1970 on a Thursday
     tm.tm_year = 1970
     dy_in_yr = 365
     dayOfWeek = 4
+
+    tm.tm_wday = (tm.tm_yday + dayOfWeek) % 7
 
     #  Next, we resolve the year
     while tm.tm_yday > dy_in_yr:
