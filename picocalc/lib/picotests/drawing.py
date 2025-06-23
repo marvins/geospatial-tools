@@ -1,15 +1,16 @@
 
 #  Micropython Libraries
 import logging
+import os
+import sys
 import time
 
 #  Project Libraries
 import colors
 import turtle
 
-#  Run Test
-def run( log_level = logging.DEBUG,
-         log_path  = './browser.log' ):
+
+def run( cdir = '.', log_level = logging.DEBUG, log_path = './browser.log' ):
     
     #  Setup Logger
     if not log_path is None:
@@ -22,20 +23,15 @@ def run( log_level = logging.DEBUG,
     #  Setup the Turtle Display
     screen = turtle.init()
     screen.fill( colors.GS4.BLACK )
-
     screen.wait_update_finished()
-    screen.draw_text( "PicoCalc Filesystem Browser", 10, 10, colors.GS4.GREEN )
 
-    #while True:
-    #
-    #    # Check for keyboard input
-    #    keys = turtle.check_keyboard()
-    #    
-    #    for key in keys:
-    #        if key == turtle.Key.ESCAPE:
-    #            screen.draw_text("Hello PicoCalc!", 10, 310, 15, colors.GS4.GREEN )
-    #            break
-    #
+    # Draw Rectangle
+    screen.fill_rect( 10, 10, 300, 30, colors.GS4.GRAY )
+    screen.draw_text( "First Rectangle", 10, 30, colors.GS4.GREEN )
+
+    #  Draw Lines
+
+
     #    time.sleep(0.1)
     time.sleep(5)
 
@@ -46,3 +42,6 @@ def run( log_level = logging.DEBUG,
     screen.reset()
 
     logging.debug( 'Exiting Application' )
+    
+
+

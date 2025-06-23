@@ -25,7 +25,8 @@ def run( cdir = '.', log_level = logging.DEBUG, log_path = './browser.log' ):
     screen.fill( colors.GS4.BLACK )
 
     screen.wait_update_finished()
-    screen.draw_text( "PicoCalc Filesystem Browser", 10, 10, colors.GS4.GREEN )
+    screen.fill_rect( 10, 10, 300, 20, colors.GS4.GRAY )
+    screen.draw_text( "PicoCalc Filesystem Browser", 10, 20, colors.GS4.GREEN )
 
     #while True:
     #

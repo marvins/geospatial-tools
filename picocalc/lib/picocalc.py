@@ -147,6 +147,7 @@ class PicoDisplay(framebuf.FrameBuffer):
         return picocalcdisplay.isScreenUpdateDone()
 
 class PicoKeyboard:
+
     def __init__(self,sclPin=7,sdaPin=6,address=0x1f):
         self.hardwarekeyBuf = deque((),30)
         self.i2c = I2C(1,scl=Pin(sclPin),sda=Pin(sdaPin),freq=10000)
@@ -172,12 +173,8 @@ class PicoKeyboard:
         return self.temp
     
     def read_reg8(self,reg):
-        self.i2c.writeto(self.address, bytes(reg)) 
-        #self.temp[0]=reg
-        #self.i2c.writeto(self.address,self.temp[0:1])
+        self.i2c.writeto(self.address, bytes(reg))
         return self.i2c.readfrom(self.address, 1)[0]
-        #self.i2c.readfrom_into(self.address,memoryview(self.temp)[0:1])
-        #return self.temp
     
     def write_reg(self,reg,value):
         self.temp[0]=reg| _WRITE_MASK

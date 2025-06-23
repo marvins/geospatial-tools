@@ -9,7 +9,7 @@ class GS4:
     BLUE       = 12
     PURPLE     = 13
     CYAN       = 14
-    LIGHT_BLUE = 15
+    LIGHT_GRAY = 15
 
 class RGB_565:
 

@@ -1,15 +1,22 @@
-# datetime.py
+#**************************** INTELLECTUAL PROPERTY RIGHTS ****************************#
+#*                                                                                    *#
+#*                           Copyright (c) 2025 Terminus LLC                          *#
+#*                                                                                    *#
+#*                                All Rights Reserved.                                *#
+#*                                                                                    *#
+#*          Use of this source code is governed by LICENSE in the repo root.          *#
+#*                                                                                    *#
+#**************************** INTELLECTUAL PROPERTY RIGHTS ****************************#
 
-import time as _tmod
-import time2 as _tmod2
+#  Python Libraries
+import time as _time
+
+#. Project Libraries
+import time2 as _time2
 
 _DBM = (0, 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334)
-_DIM = (0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+
 _TIME_SPEC = ("auto", "hours", "minutes", "seconds", "milliseconds", "microseconds")
-
-
-def _leap(y):
-    return y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)
 
 
 def _dby(y):
@@ -18,16 +25,9 @@ def _dby(y):
     return Y * 365 + Y // 4 - Y // 100 + Y // 400
 
 
-def _dim(y, m):
-    # year, month -> number of days in that month in that year.
-    if m == 2 and _leap(y):
-        return 29
-    return _DIM[m]
-
-
 def _dbm(y, m):
     # year, month -> number of days in year preceding first day of month.
-    return _DBM[m] + (m > 2 and _leap(y))
+    return _DBM[m] + (m > 2 and _time2.is_leap_year(y))
 
 
 def _ymd2o(y, m, d):
@@ -50,7 +50,7 @@ def _o2ymd(n):
     prec = _dbm(y, m)
     if prec > n:
         m -= 1
-        prec -= _dim(y, m)
+        prec -= _time2.days_in_month(y, m)
     n -= prec
     return y, m, n + 1
 
@@ -311,11 +311,11 @@ class date:
 
     @classmethod
     def fromtimestamp(cls, ts):
-        return cls(*_tmod.localtime(ts)[:3])
+        return cls(*_time.localtime(ts)[:3])
 
     @classmethod
     def today(cls):
-        return cls(*_tmod.localtime()[:3])
+        return cls(*_time.localtime()[:3])
 
     @classmethod
     def fromordinal(cls, n):
@@ -636,13 +636,13 @@ class datetime:
         if tz is None:
             raise NotImplementedError
         else:
-            dt = cls(*_tmod2.gmtime(ts)[:6], microsecond=us, tzinfo=tz)
+            dt = cls(*_time2.gmtime(ts)[:6], microsecond=us, tzinfo=tz)
             dt = tz.fromutc(dt)
         return dt
 
     @classmethod
     def now(cls, tz=None):
-        return cls.fromtimestamp(_tmod.time(), tz)
+        return cls.fromtimestamp(_time.time(), tz)
 
     @classmethod
     def fromordinal(cls, n):
@@ -829,10 +829,10 @@ class datetime:
 
     def timetuple(self):
         if self._tz is None:
-            conv = _tmod.gmtime
+            conv = _time2.gmtime
             epoch = datetime.EPOCH.replace(tzinfo=None)
         else:
-            conv = _tmod.localtime
+            conv = _time2.localtime
             epoch = datetime.EPOCH
         return conv(round((self - epoch).total_seconds()))
 
@@ -875,4 +875,4 @@ class datetime:
         return d + t + (self._tz, self._fd)
 
 
-datetime.EPOCH = datetime(*_tmod.gmtime(0)[:6], tzinfo=timezone.utc)
+datetime.EPOCH = datetime(*_time2.gmtime(0)[:6], tzinfo=timezone.utc)

@@ -406,7 +406,12 @@ def init():
 
     return TurtleScreen()
 
-def check_keyboard( verbose ):
+def reset():
+
+    a = init()
+    a.reset()
+
+def check_keyboard( verbose = False ):
 
     output = []
     temp = bytearray(1)
