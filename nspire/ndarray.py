@@ -156,7 +156,14 @@ class array:
     def clone(self):
 
         return array( self.data[:], self.dtype )
-    
+
+def dot( val1, val2 ):
+
+    if isinstance( val1, array ):
+        return val1 * val2
+    if isinstance( val2, array ):
+        return val2 * val1
+
 def zeros( dims, dtype = float ):
     '''
     Build a matrix with zeros
