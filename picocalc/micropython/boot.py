@@ -1,4 +1,6 @@
 
+print('Start of Boot')
+
 #  Micropython Libraries
 import builtins
 import gc
@@ -15,11 +17,16 @@ from flush import flush
 from pye import pye_edit
 import vt
 
+print('Importing PicoCalc')
+
 #  PicoCalc
+import picocalc
 from picocalc.core import PicoDisplay, PicoKeyboard
 from picocalc.system import run, files
 from picocalc.system import memory, disk
 import vt
+
+print('End of PicoCalc Module')
 
 #  Update System Path
 paths_to_add = ["/sd/py_scripts"]
@@ -43,7 +50,7 @@ try:
         else:
             _usb.write(str(msg))
         _usb.write('\r\n')
-    picocalc.usb_debug = usb_debug
+    picocalc.core.usb_debug = usb_debug
     
     # Run garbage collection before SD card init
     gc.collect()
@@ -70,16 +77,16 @@ try:
     # Continue with terminal and rest of setup
     pc_terminal = vt.vt(pc_display, pc_keyboard, sd=sd)
     
-    picocalc.display = pc_display
-    picocalc.keyboard = pc_keyboard
-    picocalc.terminal = pc_terminal
-    picocalc.sd = sd
+    picocalc.core.display = pc_display
+    picocalc.core.keyboard = pc_keyboard
+    picocalc.core.terminal = pc_terminal
+    picocalc.core.sd = sd
     
     def edit(*args, tab_size=2, undo=50):
         # Dry the key buffer before editing
         pc_terminal.dryBuffer()
         return pye_edit(args, tab_size=tab_size, undo=undo, io_device=pc_terminal)
-    picocalc.edit = edit
+    picocalc.core.edit = edit
     
     os.dupterm(pc_terminal)
     

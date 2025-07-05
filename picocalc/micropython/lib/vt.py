@@ -1,12 +1,18 @@
+
+#  Micropython Libraries
 from collections import deque
-import uio
-import vtterminal
 from micropython import const
 import time
+import uio
 import uos
+
+#  Project Libraries
+import vtterminal
+
 
 sc_char_width =  const(53)
 sc_char_height =  const(40)
+
 
 def ensure_nested_dir(path):
     parts = path.split("/")
@@ -25,7 +31,13 @@ def ensure_nested_dir(path):
 class vt(uio.IOBase):
     
 
-    def __init__(self,framebuf,keyboard,screencaptureKey=0x15,sd=None,captureFolder="/"): #ctrl+U for screen capture
+    def __init__( self,
+                  framebuf,
+                  keyboard,
+                  screencaptureKey = 0x15,
+                  sd = None,
+                  captureFolder = "/" ): #ctrl+U for screen capture
+        
         if sd != None:
             if not captureFolder.startswith("/"):
                 captureFolder = "/"+captureFolder
