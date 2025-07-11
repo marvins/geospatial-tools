@@ -12,7 +12,7 @@
 from time import *
 
 #  Project Libraries
-import coordinate
+import nspire.coord_ui as coord_ui
 from hal import *
 from utils import *
 
@@ -58,7 +58,7 @@ def main_menu():
                 exit_app = True
                 break
             elif action == 'coord':
-                action = coordinate.coord_converter()
+                action = coord_ui.coord_converter()
                 page.draw( force_draw=True )
         else:
             sleep(0.1)

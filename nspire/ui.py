@@ -14,7 +14,7 @@ import ti_system
 
 #  Project Libraries
 from hal import *
-import ndarray as np
+import nspire.numpy as np
 
 class Page:
 

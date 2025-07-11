@@ -11,85 +11,82 @@
 #  Python Libraries
 from time import *
 
-#  TI Libraries
-import hal
+#  Numpy
+import numpy as np
 
-#  Project Libraries
-from hal   import *
-from utils import *
-
-from ui import Button, Check_Box, HBoxLayout, Header, Label, Page, Text_Input, VBoxLayout
-
-#  Global Values
-screen_size = hal.get_screen_dim()
 
 #  Enumerations
-TYPE_ECEF    = 0
-TYPE_GEO_DD  = 1
-TYPE_GEO_DM  = 2
-TYPE_GEO_DMS = 3
-TYPE_UTM     = 4
-
-INPUT_WOUNDS = { TYPE_ECEF:    3,
-                 TYPE_GEO_DD:  3,
-                 TYPE_GEO_DM:  6,
-                 TYPE_GEO_DMS: 8 }
-
-#------------------------------------#
-#-      Convert Type to String      -#
-#------------------------------------#
-def type_to_string( tp ):
-    if tp == TYPE_ECEF:
-        return 'Earth-Centered, Earth-Fixed'
-    if tp == TYPE_GEO_DD:
-        return 'Geographic, Decimal-Degrees'
-    if tp == TYPE_GEO_DM:
-        return 'Geographic, Degree-Minutes'
-    if tp == TYPE_GEO_DMS:
-        return 'Geographic, Degree-Minute-Seconds'
-    if tp == TYPE_UTM:
-        return 'Universal Transverse Mercator'
-    
-    raise Exception('Unsupported')
-
+TYPE_ECEF = 0
+TYPE_GEO  = 1
+TYPE_UTM  = 2
 
 class Base:
     '''
     Base Coordinate Type
     '''
-  
+
     def __init__(self):
         pass
 
 class ECEF(Base):
 
-    def __init__( self ):
-        self.x = ''
-        self.y = ''
-        self.z = ''
+    def __init__( self, data ):
+        self.data = data
+
+    @staticmethod
+    def from_xyz( x, y, z ):
+        return ECEF( np.array( [ x, y, z ] ) )
 
 
-class Geo(Base):
+class Geographic(Base):
     '''
     Geographic Coordinate System
     '''
-  
-    def __init__( self ):
-        self.lat_deg = ''
-        self.lon_deg = ''
-        self.elev_m  = ''
 
-        super().__init__(self)
+    def __init__( self,
+                  lat_deg: float,
+                  lon_deg: float,
+                  elev_m:  float ):
+
+        self.lat_deg = lat_deg
+        self.lon_deg = lon_deg
+        self.elev_m  = elev_m
+
+        super().__init__()
+
+    def latitude( self, degrees: bool = True ):
+        if degrees:
+            return self.lat_deg
+        else:
+            return math.radians(self.lat_deg)
+
+    def longitude( self, degrees: bool = True ):
+        if degrees:
+            return self.lon_deg
+        else:
+            return math.radians(self.lon_deg)
+
+    def elevation(self):
+        return self.elev_m
+
+    @staticmethod
+    def from_lla( lat_deg: float,
+                  lon_deg: float,
+                  elev_m:  float = 0 ):
+
+        return Geographic( lat_deg = lat_deg,
+                           lon_deg = lon_deg,
+                           elev_m  = elev_m )
 
 
 class UTM(Base):
 
     def __init__( self ):
-        self.grid_zone  = ''
-        self.hemisphere = ''
-        self.easting    = ''
-        self.northing   = ''
-        self.elev_m     = ''
+        self.grid_zone  = 0
+        self.hemisphere = True
+        self.easting    = 0
+        self.northing   = 0
+        self.elev_m     = 0
 
 class Factory:
 
@@ -101,312 +98,5 @@ class Factory:
             return UTM()
         return Geo()
 
-#---------------------------------#
-#-       Geographic Input        -#
-#---------------------------------#
-def geo_dd_input( is_input ):
 
-    layout = VBoxLayout()
 
-    layout.add_widget( Label( title = 'Geo Decimal Degrees' ) )
-
-    #  Span layout
-    temp_layout = HBoxLayout()
-    layout.add_widget( temp_layout )
-
-    #  Column 1:  Lat/Lon
-    c1_layout = VBoxLayout()
-    temp_layout.add_widget( c1_layout )
-    c1_layout.add_widget( Text_Input( label_text = 'Latitude: ' ) )
-    c1_layout.add_widget( Text_Input( label_text = 'Longitude: ' ) )
-    
-    #  Column 2:  Format
-    c2_layout = VBoxLayout()
-    temp_layout.add_widget( c2_layout )
-
-    c2_layout.add_widget( Check_Box( label_text = 'deg', is_active = True ) )
-    c2_layout.add_widget( Check_Box( label_text = 'rad', is_active = False ) )
-
-    return layout
-
-def geo_dm_input( is_input ):
-    
-    layout = VBoxLayout()
-
-    layout.add_widget( Label( title = 'Geo Degree-Minutes' ) )
-
-    #  Latitude Inputs
-    layout.add_widget( Label( title = 'Latitude' ) )
-    lat_layout = HBoxLayout()
-    layout.add_widget( lat_layout )
-
-    lat_layout.add_widget( Text_Input( label_text = 'Deg: ' ) )
-    lat_layout.add_widget( Text_Input( label_text = 'Min: ' ) )
-
-
-    #  Longitude Inputs
-    layout.add_widget( Label( title = 'Longitude' ) )
-    lon_layout = HBoxLayout()
-    layout.add_widget( lon_layout )
-
-    lon_layout.add_widget( Text_Input( label_text = 'Deg: ' ) )
-    lon_layout.add_widget( Text_Input( label_text = 'Min: ' ) )
-
-    return layout
-
-def geo_dms_input( is_input ):
-    
-    layout = VBoxLayout()
-
-    layout.add_widget( Label( title = 'Geo Degree-Minutes-Seconds' ) )
-
-    #  Latitude Inputs
-    layout.add_widget( Label( title = 'Latitude' ) )
-    lat_layout = HBoxLayout()
-    layout.add_widget( lat_layout )
-
-    lat_layout.add_widget( Text_Input( label_text = 'Deg: ', input_width = 50 ) )
-    lat_layout.add_widget( Text_Input( label_text = 'Min: ', input_width = 50 ) )
-    lat_layout.add_widget( Text_Input( label_text = 'Secs: ', input_width = 75 ) )
-
-
-    #  Longitude Inputs
-    layout.add_widget( Label( title = 'Longitude' ) )
-    lon_layout = HBoxLayout()
-    layout.add_widget( lon_layout )
-
-    lon_layout.add_widget( Text_Input( label_text = 'Deg: ', input_width = 50 ) )
-    lon_layout.add_widget( Text_Input( label_text = 'Min: ', input_width = 50 ) )
-    lon_layout.add_widget( Text_Input( label_text = 'Secs: ', input_width = 75 ) )
-
-    return layout
-
-#---------------------------------#
-#-           UTM Input           -#
-#---------------------------------#
-def utm_input( is_input ):
-    
-    layout = VBoxLayout()
-
-    layout.add_widget( Label( title = 'Universal Transverse Mercator' ) )
-
-    #  Span layout
-    temp_layout = HBoxLayout()
-    layout.add_widget( temp_layout )
-
-    #  Column 1:  Grid Zone, and other text inputs
-    c1_layout = VBoxLayout()
-    temp_layout.add_widget( c1_layout )
-    c1_layout.add_widget( Text_Input( label_text = 'Grid Zone: ' ) )
-    c1_layout.add_widget( Text_Input( label_text = 'Easting: ' ) )
-    c1_layout.add_widget( Text_Input( label_text = 'Northing: ' ) )
-    
-    #  Column 2:  Hemisphere
-    c2_layout = VBoxLayout()
-    temp_layout.add_widget( c2_layout )
-
-    c2_layout.add_widget( Check_Box( label_text = 'N', is_active = True ) )
-    c2_layout.add_widget( Check_Box( label_text = 'S', is_active = False ) )
-
-    return layout
-
-#---------------------------------#
-#-           ECEF Input          -#
-#---------------------------------#
-def ecef_input( is_input ):
-    
-    vlayout = VBoxLayout()
-    vlayout.add_widget( Label( title = 'Earth-Centered, Earth-Fixed' ) )
-
-    layout = HBoxLayout()
-    vlayout.add_widget( layout )
-
-    #--------------------
-    #  Input Layout
-    clayout = VBoxLayout()
-    layout.add_widget( clayout )
-
-    # Text Inputs
-    clayout.add_widget( Text_Input( label_text = 'X: ' ) )
-    clayout.add_widget( Text_Input( label_text = 'Y: ' ) )
-    clayout.add_widget( Text_Input( label_text = 'Z: ' ) )
-
-    #  Radio Inputs
-    rlayout = VBoxLayout()
-    layout.add_widget( rlayout )
-
-    rlayout.add_widget( Check_Box( label_text = 'm' ) )
-    rlayout.add_widget( Check_Box( label_text = 'km' ) )
-    
-    return vlayout
-
-
-INPUT_MAP = { TYPE_ECEF:    ecef_input,
-              TYPE_GEO_DD:  geo_dd_input,
-              TYPE_GEO_DM:  geo_dm_input,
-              TYPE_GEO_DMS: geo_dms_input,
-              TYPE_UTM:     utm_input }
-
-#--------------------------------------------#
-#-          Coordinate Input Menu           -#
-#--------------------------------------------#
-def build_converter_panel( coord_types ):
-
-    #  Create Page
-    page = Page()
-
-    #  Create initial label
-    page.add_widget( INPUT_MAP[coord_types[0]]( is_input = True ) )
-    page.add_widget( INPUT_MAP[coord_types[1]]( is_input = False ) )
-
-    return page
-    
-
-#-------------------------------------------#
-#-      Build Geographic Input Menu        -#
-#-------------------------------------------#
-def build_geographic_input_menu():
-
-    page = Page()
-
-    #  Add Header
-    page.add_widget( Header( title = 'Geographic Type',
-                             show_time = True ) )
-    
-    page.add_widget( Label( title = 'Select Input Type' ) )
-
-    page.add_widget( Button( title = 'Decimal-Degrees (d)',
-                             hotkey = 'd',
-                             retcode = 'geo_dd' ) )
-    page.add_widget( Button( title = 'Degree-Minutes (m)',
-                             hotkey = 'm',
-                             retcode = 'geo_dm' ) )
-    page.add_widget( Button( title = 'Degrees-Minutes-Seconds (s)',
-                             hotkey = 's',
-                             retcode = 'geo_dms' ) )
-    page.add_widget( Button( title = 'Exit' ) )
-    
-    return page
-
-
-
-#--------------------------------------------#
-#-        Menu for Geographic Coordinate    -#
-#--------------------------------------------#
-def geographic_input_menu():
-    
-    page = build_geographic_input_menu()
-
-    #  Run until action received
-    while True:
-
-        page.draw()
-
-        #  Check keyboard input
-        action = page.check_keyboard()
-
-        if not action is None:
-            
-            if action == 'exit':
-                return action
-            elif action == 'geo_dd':
-                return TYPE_GEO_DD
-            elif action == 'geo_dm':
-                return TYPE_GEO_DM
-            elif action == 'geo_dms':
-                return TYPE_GEO_DMS
-            else:
-                pass
-        else:
-            sleep(0.1)
-
-#--------------------------------#
-#-      Build Input Menu        -#
-#--------------------------------#
-def build_input_menu( counter ):
-
-    mode = 'Input'
-    if counter == 1:
-        mode = 'Output'
-
-    page = Page()
-
-    #  Add Header
-    page.add_widget( Header( title = 'Coordinate Conversion',
-                             show_time = True ) )
-    
-    page.add_widget( Label( title = 'Select ' + mode + ' Type' ) )
-
-    page.add_widget( Button( title = 'Geographic (g)',
-                             hotkey = 'g',
-                             retcode = 'geo' ) )
-    page.add_widget( Button( title = 'Earth-Centered, Earth-Fixed (e)',
-                             hotkey = 'e',
-                             retcode = 'ecef' ) )
-    page.add_widget( Button( title = 'Universal Transverse Mercator (u)',
-                             hotkey = 'u',
-                             retcode = 'utm' ) )
-    page.add_widget( Button( title = 'Escape (esc)' ) )
-
-    return page
-
-#---------------------------#
-#-      Primary Menu       -#
-#---------------------------#
-def coord_converter():
-    
-    coord_types = []
-
-    for x in range( 2 ):
-
-        #  Create fresh page
-        page = build_input_menu( x )
-        is_first_time = True
-
-        while True:
-
-            page.draw( force_draw = is_first_time )
-            is_first_time = False
-
-            #  Check keyboard input
-            action = page.check_keyboard()
-
-            if not action is None:
-
-                print( 'Action: ', action )
-                if action == 'exit':
-                    return
-            
-                elif action == 'geo':
-                    action = geographic_input_menu()
-                    if action == 'exit':
-                        return
-                    coord_types.append( action )
-                    break
-            
-                elif action == 'utm':
-                    coord_types.append( TYPE_UTM )
-                    break
-
-                elif action == 'ecef':
-                    coord_types.append( TYPE_ECEF )
-                    break
-    
-    #  Process Views
-    page = build_converter_panel( coord_types )
-    is_first_time = True
-
-    while True:
-
-        page.draw( force_draw = is_first_time )
-        is_first_time = False
-
-        #  Check keyboard input
-        action = page.check_keyboard()
-
-        if not action is None:
-
-            if action == 'exit':
-                return
-            
-                
