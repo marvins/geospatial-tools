@@ -50,13 +50,13 @@ def rotation_matrix( axes   : str,
             tmp[1,1] =  math.cos( angle )
 
         else:
-            raise Exception( f'Unsupported axis: {axis}' )
+            raise Exception( 'Unsupported axis: {}'.format( axis ) )
 
 
         if mat is None:
             mat = tmp
         else:
-            mat = mat @ tmp
+            mat = mat * tmp
 
     return mat
 

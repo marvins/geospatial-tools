@@ -17,6 +17,7 @@ class array:
 
         self.data  = None
         self.shape = None
+        self.size  = None
 
         #  If the input is a list, it's "data"
         if isinstance(indata,list):
@@ -25,12 +26,14 @@ class array:
         #  If the input is a tuple, it's the shape
         elif isinstance(indata,tuple):
             self.shape = indata
+            self.size  = self.get_size()
 
         #  If it's an array, we're copying it
         elif isinstance(indata,array):
             self.shape = indata.shape
             self.data  = indata.data
             self.dtype = indata.dtype
+            self.size  = self.get_size()
 
         else:
             raise Exception( 'Not sure what the input is?' )
@@ -49,6 +52,7 @@ class array:
         #  If the input was data, then compute the shape
         if self.shape is None:
             self.shape = self.get_shape()
+            self.size  = self.get_size()
         self.dtype = float
 
     def get(self, *args ):
@@ -145,6 +149,25 @@ class array:
         raise Exception('Not Implemented Yet')
 
 
+    def flatten(self):
+
+        output = array( (self.size,) )
+
+        def unroll( output, start_pos, data, dims  ):
+
+            print( 'Start Pos: {}'.format(start_pos) )
+            for x in range( dims[0] ):
+
+                if len(dims) == 1:
+                    output[x + start_pos] = data[x]
+                else:
+                    output[x + start_pos] = unroll( output, start_pos + x, data[x], dims[1:] )
+            return output
+
+        return unroll( output, 0, self.data, self.shape )
+
+
+
     def transpose(self):
 
         #  Get the current shape
@@ -176,6 +199,13 @@ class array:
                 return [len(arr)] + temp_shape(arr[0])  # Recurse into the first element
             return []  # Base case: Return empty list when a non-list item is encountered
         return tuple(temp_shape( self.data ))
+
+    def get_size(self):
+
+        l = self.shape[0]
+        for idx in range( 1, len(self.shape) ):
+            l *= self.shape[idx]
+        return l
 
     def __str__( self ):
       return self.print_contents()
@@ -263,6 +293,25 @@ def mat_mul( matA, matB ):
       output[i,j] = sum
 
   return output
+
+def cross( val1, val2 ):
+
+    if not isinstance(val1,array):
+      raise Exception( 'First value must be array. Actual: {}'.format(type(val1)))
+
+    if not isinstance(val2,array):
+      raise Exception( 'Second value must be array. Actual: {}'.format(type(val2)))
+
+    a = val1.flatten()
+    b = val2.flatten()
+
+    output = array( (val1.size,) )
+
+    output[0] = a[1] * b[2] - a[2] * b[1]
+    output[1] = a[2] * b[0] - a[0] * b[2]
+    output[2] = a[0] * b[1] - a[1] * b[0]
+
+    return output
 
 def dot( val1, val2 ):
   '''
