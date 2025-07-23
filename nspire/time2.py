@@ -16,8 +16,14 @@ SECS_PER_MIN  = 60
 SECS_PER_HOUR = 3600
 SECS_PER_DAY  = 86400
 
+CURRENT_TZ_OFFSET_HOURS = 0
+
+def set_timezone_offset( hours ):
+    global CURRENT_TZ_OFFSET_HOURS
+    CURRENT_TZ_OFFSET_HOURS = hours
+
 class struct_time:
-   
+
     def __init__(self):
         self.tm_year  = None
         self.tm_mon   = None
@@ -28,6 +34,9 @@ class struct_time:
         self.tm_wday  = None
         self.tm_yday  = None
         self.tm_isdst = None
+
+    def as_array(self):
+        return [self.tm_year, self.tm_mon, self.tm_mday, self.tm_hour, self.tm_min, self.tm_sec, self.tm_wday, self.tm_yday, self.tm_isdst]
 
     def __str__(self):
       output = '( yr: ' + str(self.tm_year) + \
@@ -56,51 +65,20 @@ def days_in_month(y, m):
 def gmtime():
 
     #  Get the unix seconds
-    secs = _time.clock()
-    print('secs: ', secs, ', lt: ', _time.localtime())
-    
-    #  Time Components
+    lt = _time.localtime()
+
+    #  Convert this to local time
     tm = struct_time()
-    
-    tm.tm_sec  = int( secs ) % 60
-    tm.tm_min  = int( secs / 60) % 60
-    
-    # Calculate days
-    tm.tm_yday = int( int( secs ) / SECS_PER_DAY )
 
-    tm.tm_hour = int( ( int( secs ) % SECS_PER_DAY ) / 3600 )
-    
-    #  Unix time starts in 1970 on a Thursday
-    tm.tm_year = 1970
-    dy_in_yr = 365
-    dayOfWeek = 4
-
-    tm.tm_wday = (tm.tm_yday + dayOfWeek) % 7
-
-    #  Next, we resolve the year
-    while tm.tm_yday > dy_in_yr:
-        
-        # If it's greater, than subtract this years day and do the next
-        tm.tm_yday -= dy_in_yr
-
-        dy_in_yr = 365
-        if is_leap_year( tm.tm_year + 1 ):
-          dy_in_yr = 366
-
-        tm.tm_year += 1
-
-
-    #  Now the month
-    tm.tm_mday = tm.tm_yday
-    tm.tm_mon  = 1
-    while True:
-
-        dim = days_in_month( tm.tm_year, tm.tm_mon )
-        if tm.tm_mday <= dim:
-            break
-        tm.tm_mday -= dim
-        tm.tm_mon += 1
-
+    tm.tm_year = lt[0]
+    tm.tm_mon  = lt[1]
+    tm.tm_mday = lt[2]
+    tm.tm_hour = lt[3] + CURRENT_TZ_OFFSET_HOURS
+    tm.tm_min  = lt[4]
+    tm.tm_sec  = lt[5]
+    tm.tm_wday = lt[6]
+    tm.tm_yday = lt[7]
+    tm.tm_isdst = 0
 
     return tm
 

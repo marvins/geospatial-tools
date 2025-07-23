@@ -8,6 +8,7 @@ COPY_METHOD='rsync'
 DO_CLEAN=0
 MP_LIBRARY_PATH="${HOME}/.micropython/lib"
 
+BASE_DIR="$(realpath ./nspire)"
 
 #------------------------------------------------#
 #-          Print Usage Instructions            -#
@@ -72,18 +73,27 @@ fi
 #-        Copy Library Folder Over          -#
 #--------------------------------------------#
 if [ "${COPY_METHOD}" = 'rsync' ]; then
-    rsync -avP  ./nspire/ ${MP_LIBRARY_PATH}/
+    rsync -avP  ${BASE_DIR}/ ${MP_LIBRARY_PATH}/
 
+
+#  This should not be this ugly, however I am finding it weird to use the iCloud folder on my Mac
+#  which maps to "${HOME}/Library/Mobile Documents/com~apple~CloudDocs".
+#  These spaces are making things odd, so I get a little basic with my steps.
 elif [ "${COPY_METHOD}" = 'symlink' ]; then
-    for P in $(find ./nspire/ -type f); do
 
-        SOURCE_PATH="$(realpath ${P})"
+    FLIST=$(find "${BASE_DIR}" -type f )
 
-        DEST_PATH="${MP_LIBRARY_PATH}/$(basename ${SOURCE_PATH})"
+    while IFS= read -r line; do
+
+        BNAME=$(basename "$line")
+        SOURCE_PATH=$(realpath "$line")
+        DEST_PATH="${MP_LIBRARY_PATH}/${BNAME}"
+
+        #  Apply symlink
         echo "Copying: ${SOURCE_PATH} -> ${DEST_PATH}"
+        ln -snf "${SOURCE_PATH}" "${DEST_PATH}"
 
-        ln -snf ${SOURCE_PATH} ${DEST_PATH}
-    done
+    done <<< "$FLIST"
 
 else
     echo "error: Unsupported copy method: ${COPY_METHOD}"
